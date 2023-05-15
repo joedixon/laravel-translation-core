@@ -1,0 +1,32 @@
+{
+    "name": "joedixon/laravel-translation-core",
+    "description": "A library for interacting with translations in a Laravel project",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Joedixon\\TranslationCore\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Joe Dixon",
+            "email": "hello@joedixon.co.uk"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^9.0|^10.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.0.0",
+        "nunomaduro/larastan": "^2.0",
+        "pestphp/pest": "^2.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
