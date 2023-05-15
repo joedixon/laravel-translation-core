@@ -18,20 +18,20 @@ class Translations
     ) {
     }
 
-    public function toArray(): array
+    /**
+     * Get the string key translations.
+     */
+    public function string(): Collection
     {
-        return [
-            'string' => $this->stringKeyTranslations,
-            'short' => $this->shortKeyTranslations,
-        ];
+        return $this->stringKeyTranslations;
     }
 
-    public function map(Closure $callback): self
+    /**
+     * Get the short key translations.
+     */
+    public function short(): Collection
     {
-        $this->stringKeyTranslations = $this->stringKeyTranslations->map($callback);
-        $this->shortKeyTranslations = $this->shortKeyTranslations->map($callback);
-
-        return $this;
+        return $this->shortKeyTranslations;
     }
 
     public static function make(?Collection $stringKeyTranslations = null, ?Collection $shortKeyTranslations = null): self
@@ -40,28 +40,5 @@ class Translations
             $stringKeyTranslations ?? new Collection(),
             $shortKeyTranslations ?? new Collection(),
         );
-    }
-
-    public function emptyValues()
-    {
-        $this->stringKeyTranslations = $this->emptyCollectionValues($this->stringKeyTranslations);
-        $this->shortKeyTranslations = $this->emptyCollectionValues($this->shortKeyTranslations);
-
-        return $this;
-    }
-
-    public function emptyCollectionValues(Collection $collection): Collection
-    {
-        return $collection->map(function ($item, $index) {
-            if ($item instanceof Collection) {
-                return $this->emptyCollectionValues($item);
-            }
-
-            if (is_array($item)) {
-                return $this->emptyCollectionValues(new Collection($item))->toArray();
-            }
-
-            return '';
-        });
     }
 }
