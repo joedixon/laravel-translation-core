@@ -12,12 +12,12 @@ trait InteractsWithStringKeys
      */
     public function allStringKeyTranslationsFor(string $language): Collection
     {
-        $files = new Collection($this->disk->allFiles($this->languageFilesPath));
+        $files = collect($this->disk->allFiles($this->languageFilesPath));
 
         return $files->filter(
-            fn ($file) => str_ends_with($file, "{$language}.json")
+            fn ($file) => Str::endsWith($file, "{$language}.json")
         )->flatMap(function ($file) {
-            if (strpos($file->getPathname(), 'vendor')) {
+            if (Str::contains($file->getPathname(), 'vendor')) {
                 $vendor = Str::before(Str::after($file->getPathname(), 'vendor'.DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
 
                 return ["{$vendor}::string" => json_decode($this->disk->get($file), true)];

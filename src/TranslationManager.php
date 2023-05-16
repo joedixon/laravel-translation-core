@@ -18,8 +18,7 @@ class TranslationManager extends Manager
         return new File(
             new Filesystem, 
             $this->container->make('path.lang'), 
-            config('app.locale'), 
-            $this->container->make(Scanner::class)
+            config('app.locale')
         );
     }
 }

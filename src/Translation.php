@@ -10,8 +10,6 @@ use JoeDixon\TranslationCore\Events\TranslationAdded;
 
 abstract class Translation
 {
-    protected Scanner $scanner;
-
     protected string $sourceLanguage;
 
     /**

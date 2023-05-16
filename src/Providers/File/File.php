@@ -7,8 +7,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 use JoeDixon\TranslationCore\Exceptions\LanguageExistsException;
-use JoeDixon\TranslationCore\Scanner;
 use JoeDixon\TranslationCore\Translation;
+use Symfony\Component\Finder\SplFileInfo;
 
 class File extends Translation
 {
@@ -17,8 +17,7 @@ class File extends Translation
     public function __construct(
         private Filesystem $disk,
         private string $languageFilesPath,
-        protected string $sourceLanguage,
-        protected Scanner $scanner
+        protected string $sourceLanguage
     ) {
     }
 
@@ -27,17 +26,9 @@ class File extends Translation
      */
     public function map(string|null $key = null, string|null $default = null): Collection|string|null
     {
-        $map = Collection::make($this->disk->allFiles($this->languageFilesPath))
-            ->flatMap(function ($file) {
-                $path = Str::of($file->getPathname())
-                    ->replace($this->languageFilesPath, '')
-                    ->replaceFirst(DIRECTORY_SEPARATOR, '');
-
-                $key = Str::of($path)
-                    ->replaceLast(".{$file->getExtension()}", '')
-                    ->replace(DIRECTORY_SEPARATOR, '.', $path);
-
-                return [(string) $key => (string) $path];
+        $map = collect($this->disk->allFiles($this->languageFilesPath))
+            ->flatMap(function (SplFileInfo $file) {
+                return $this->getKeyAndPath($file);
             });
 
         if ($key) {
@@ -52,24 +43,21 @@ class File extends Translation
      */
     public function allLanguages(): Collection
     {
-        // As per the docs, there should be a subdirectory within the
-        // languages path so we can return these directory names as a collection
-        $directories = Collection::make($this->disk->directories($this->languageFilesPath));
+        $directories = collect($this->disk->directories($this->languageFilesPath));
 
         $directoryLanguages = $directories->mapWithKeys(function ($directory) {
             $language = basename($directory);
 
             return [$language => $language];
         })->filter(function ($language) {
-            // at the moemnt, we're not supporting vendor specific translations
-            return $language != 'vendor';
+            return $language !== 'vendor';
         });
 
-        $fileLangauges = Collection::make($this->disk->allFiles($this->languageFilesPath))
+        $fileLanguages = collect($this->disk->allFiles($this->languageFilesPath))
             ->filter(fn ($file) => $file->getExtension() === 'json')
             ->mapWithKeys(fn ($file) => [Str::replace(".{$file->getExtension()}", '', $file->getFilename()) => Str::replace(".{$file->getExtension()}", '', $file->getFilename())]);
 
-        return $directoryLanguages->merge($fileLangauges);
+        return $directoryLanguages->merge($fileLanguages);
     }
 
     /**
@@ -86,13 +74,15 @@ class File extends Translation
     public function addLanguage(string $language, ?string $name = null): void
     {
         if ($this->languageExists($language)) {
-            throw new LanguageExistsException(Lang::get('translation::errors.language_exists', ['language' => $language]));
+            throw new LanguageExistsException(
+                Lang::get('translation::errors.language_exists', ['language' => $language])
+            );
         }
 
         $this->disk->makeDirectory("{$this->languageFilesPath}".DIRECTORY_SEPARATOR."$language");
 
         if (! $this->disk->exists("{$this->languageFilesPath}".DIRECTORY_SEPARATOR."{$language}.json")) {
-            $this->saveStringKeyTranslations($language, collect(['string' => new Collection()]));
+            $this->saveStringKeyTranslations($language, collect(['string' => collect()]));
         }
     }
 
@@ -102,13 +92,31 @@ class File extends Translation
     public function allTranslationsFromMap(string $key): Collection
     {
         if (! $file = $this->map($key)) {
-            return new Collection();
+            return collect();
         }
 
         if (Str::endsWith($file, '.php')) {
-            return Collection::make($this->disk->getRequire("{$this->languageFilesPath}/{$file}"));
+            return collect($this->disk->getRequire("{$this->languageFilesPath}/{$file}"));
         }
 
-        return Collection::make(json_decode($this->disk->get("{$this->languageFilesPath}/{$file}"), true));
+        return collect(json_decode($this->disk->get("{$this->languageFilesPath}/{$file}"), true));
+    }
+
+    /**
+     * Get the language name and the associated path from a file.
+     *
+     * @return array<string, string>
+     */
+    protected function getKeyAndPath(SplFileInfo $file): array
+    {
+        $path = Str::of($file->getPathname())
+            ->replace($this->languageFilesPath, '')
+            ->replaceFirst(DIRECTORY_SEPARATOR, '');
+
+        $key = Str::of($path)
+            ->replaceLast(".{$file->getExtension()}", '')
+            ->replace(DIRECTORY_SEPARATOR, '.', $path);
+
+        return [(string) $key => (string) $path];
     }
 }

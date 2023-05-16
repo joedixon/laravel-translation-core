@@ -153,56 +153,41 @@ it('can get a= collection of group names for a given language', function () {
 //     unlink(__DIR__.'/fixtures/lang/es/test.php');
 // });
 
-// test('it_can_add_a_vendor_namespaced_translations', function () {
-//     $this->translation->addShortKeyTranslation('es', 'translation_test::test', 'hello', 'Hola!');
+it('can add a vendor namespaced translation', function () {
+    $this->translation->addShortKeyTranslation('es', 'translation-test::test', 'hello', 'Hola!');
 
-//     $this->assertEquals($this->translation->allTranslationsFor('es')->toArray(), [
-//         'short' => [
-//             'translation_test::test' => [
-//                 'hello' => 'Hola!',
-//             ],
-//         ],
-//         'string' => [],
-//     ]);
+    expect($this->translation->allTranslationsFor('es')->short()['translation-test::test'])
+        ->toEqual(['hello' => 'Hola!']);
 
-//     File::deleteDirectory(__DIR__.'/fixtures/lang/vendor');
-// });
+    File::deleteDirectory(__DIR__.'/../fixtures/lang/vendor/translation-test');
+});
 
-// test('it_can_add_a_nested_translation', function () {
-//     $this->translation->addShortKeyTranslation('en', 'test', 'test.nested', 'Nested!');
+it('can add a nested translation', function () {
+    $this->translation->addShortKeyTranslation('es', 'test', 'test.nested', 'Nested!');
 
-//     $this->assertEquals($this->translation->allShortKeyTranslationsFor('en')->toArray(), [
-//         'test' => [
-//             'hello' => 'Hello',
-//             'test.nested' => 'Nested!',
-//             'whats_up' => 'What\'s up!',
-//         ],
-//     ]);
+    expect($this->translation->allTranslationsFor('es')->short()['test'])
+        ->toEqual(['hello' => 'Hola!', 'whats_up' => "¡Qué pasa!", 'test.nested' => 'Nested!']);
 
-//     file_put_contents(
-//         app()['path.lang'].'/en/test.php',
-//         "<?php\n\nreturn ".var_export(['hello' => 'Hello', 'whats_up' => 'What\'s up!'], true).';'.\PHP_EOL
-//     );
-// });
+    file_put_contents(
+        $this->app['path.lang'].'/es/test.php',
+        "<?php\n\nreturn ".var_export(['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!'], true).';'.\PHP_EOL
+    );
+});
 
-// test('it_can_add_nested_vendor_namespaced_translations', function () {
-//     $this->translation->addShortKeyTranslation('es', 'translation_test::test', 'nested.hello', 'Hola!');
+it('can add nested vendor namespaced translations', function () {
+    $this->translation->addShortKeyTranslation('es', 'translation-test::test', 'nested.hello', 'Hola!');
 
-//     $this->assertEquals($this->translation->allTranslationsFor('es')->toArray(), [
-//         'short' => [
-//             'translation_test::test' => [
-//                 'nested.hello' => 'Hola!',
-//             ],
-//         ],
-//         'string' => [],
-//     ]);
+    expect($this->translation->allTranslationsFor('es')->short()['translation-test::test'])
+        ->toEqual([
+            'nested.hello' => 'Hola!',
+        ]);
 
-//     File::deleteDirectory(__DIR__.'/fixtures/lang/vendor');
-// });
+    File::deleteDirectory(__DIR__.'/../fixtures/lang/vendor/translation-test');
+});
 
 // test('it_can_merge_a_namespaced_language_with_the_base_language', function () {
-//     $this->translation->addShortKeyTranslation('en', 'translation_test::test', 'hello', 'Hello');
-//     $this->translation->addShortKeyTranslation('es', 'translation_test::test', 'hello', 'Hola!');
+//     $this->translation->addShortKeyTranslation('en', 'translation-test::test', 'hello', 'Hello');
+//     $this->translation->addShortKeyTranslation('es', 'translation-test::test', 'hello', 'Hola!');
 //     $translations = $this->translation->getSourceLanguageTranslationsWith('es');
 
 //     $this->assertEquals($translations->toArray(), [
@@ -211,7 +196,7 @@ it('can get a= collection of group names for a given language', function () {
 //                 'hello' => ['en' => 'Hello', 'es' => ''],
 //                 'whats_up' => ['en' => "What's up!", 'es' => ''],
 //             ],
-//             'translation_test::test' => [
+//             'translation-test::test' => [
 //                 'hello' => ['en' => 'Hello', 'es' => 'Hola!'],
 //             ],
 //         ],
