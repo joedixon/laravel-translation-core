@@ -16,6 +16,7 @@ beforeEach(function () {
 });
 
 it('can build a map of translation files', function () {
+    dd($this->translation->map());
     expect($this->translation->map()->last())
         ->toEqual('vendor/laravel-translation/en/validation.php');
 });
@@ -52,7 +53,7 @@ it('returns all translations for a given language', function () {
     $translations = $this->translation->allTranslationsFor('es');
 
     expect($translations->string())->toBeEmpty();
-    expect($translations->short()->toArray())->toEqual(['empty' => [], 'products' => ['title' => 'Product 1']]);
+    expect($translations->short()->toArray())->toEqual(['empty' => [], 'products' => ['title' => 'Product 1'], 'test' => ['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!',]]);
 });
 
 it('throws an exception if a language exists', function () {
@@ -86,11 +87,11 @@ it('can add a new translation to an existing translation group', function () {
     $translations = $this->translation->allTranslationsFor('es');
 
     expect($translations->short()->toArray()['test'])
-        ->toEqual(['hello' => 'Hola', 'whats_up' => '¡Qué pasa!', 'test' => 'Pruebas']);
+        ->toEqual(['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!', 'test' => 'Pruebas']);
 
     file_put_contents(
         $this->app['path.lang'].'/es/test.php',
-        "<?php\n\nreturn ".var_export(['hello' => 'Hola', 'whats_up' => '¡Qué pasa!'], true).';'.\PHP_EOL
+        "<?php\n\nreturn ".var_export(['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!'], true).';'.\PHP_EOL
     );
 });
 

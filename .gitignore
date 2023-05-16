@@ -1,5 +1,5 @@
+/vendor
 composer.lock
-vendor
 coverage
 .php-cs-fixer.cache
 .phpunit.result.cache
