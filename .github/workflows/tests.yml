@@ -18,6 +18,10 @@ jobs:
             laravel: ^9.0
           - testbench: ^8.0
             laravel: ^10.0
+          - pest: ^1.0
+            laravel: ^9.0
+          - pest: ^2.0
+            laravel: ^10.0
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }}
 
@@ -36,6 +40,7 @@ jobs:
         run: |
            composer require "illuminate/contracts=${{ matrix.laravel }}" --no-update
            composer require --dev "orchestra/testbench=${{ matrix.testbench }}" --no-update
+           composer require --dev "pestphp/pest=${{ matrix.pest }}" --no-update
            composer update --prefer-dist --no-interaction --no-progress
 
       - name: Execute unit tests
