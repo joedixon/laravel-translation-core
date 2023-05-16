@@ -35,7 +35,7 @@ jobs:
       - name: Install PHP dependencies
         run: |
            composer require "illuminate/contracts=${{ matrix.laravel }}" --no-update
-           composer require-dev "orchestra/testbench=${{ matrix.testbench }}" --no-update
+           composer require --dev "orchestra/testbench=${{ matrix.testbench }}" --no-update
            composer update --prefer-dist --no-interaction --no-progress
 
       - name: Execute unit tests
