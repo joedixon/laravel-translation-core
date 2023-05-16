@@ -16,7 +16,6 @@ beforeEach(function () {
 });
 
 it('can build a map of translation files', function () {
-    dd($this->translation->map());
     expect($this->translation->map()->last())
         ->toEqual('vendor/laravel-translation/en/validation.php');
 });
