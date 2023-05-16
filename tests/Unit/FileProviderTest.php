@@ -5,7 +5,7 @@ namespace JoeDixon\Translation\Tests;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use JoeDixon\Translation\Events\TranslationAdded;
-use JoeDixon\Translation\Exceptions\LanguageExistsException;
+use JoeDixon\TranslationCore\Exceptions\LanguageExistsException;
 use JoeDixon\TranslationCore\Translation;
 use Tests\Cases\FileProviderTestCase;
 
@@ -28,9 +28,9 @@ it('can find a translation file from the translation file map', function () {
 it('returns all languages', function () {
     $languages = $this->translation->allLanguages();
 
-    expect($languages)->toHaveCount(5);
+    expect($languages)->toHaveCount(4);
     expect($languages->toArray())
-        ->toEqual(['de' => 'de', 'en' => 'en', 'es' => 'es', 'fr' => 'fr', 'jp' => 'jp']);
+        ->toEqual(['de' => 'de', 'en' => 'en', 'es' => 'es', 'jp' => 'jp']);
 });
 
 it('returns all translations', function () {
@@ -45,86 +45,87 @@ it('returns all translations', function () {
     $this->assertArrayHasKey('de', $translations->toArray());
     $this->assertArrayHasKey('en', $translations->toArray());
     $this->assertArrayHasKey('es', $translations->toArray());
-    $this->assertArrayHasKey('fr', $translations->toArray());
     $this->assertArrayHasKey('jp', $translations->toArray());
 });
 
-// test('it_returns_all_translations_for_a_given_language', function () {
-//     $translations = $this->translation->allTranslationsFor('en');
-//     $this->assertEquals($translations->count(), 2);
-//     $this->assertEquals(['string' => ['string' => ['Hello' => 'Hello', "What's up" => "What's up!"]], 'short' => ['test' => ['hello' => 'Hello', 'whats_up' => "What's up!"]]], $translations->toArray());
-//     $this->assertArrayHasKey('string', $translations->toArray());
-//     $this->assertArrayHasKey('short', $translations->toArray());
-// });
+it('returns all translations for a given language', function () {
+    $translations = $this->translation->allTranslationsFor('es');
 
-// test('it_throws_an_exception_if_a_language_exists', function () {
-//     $this->expectException(LanguageExistsException::class);
-//     $this->translation->addLanguage('en');
-// });
+    expect($translations->string())->toBeEmpty();
+    expect($translations->short()->toArray())->toEqual(['empty' => [], 'products' => ['title' => 'Product 1']]);
+});
 
-// test('it_can_add_a_new_language', function () {
-//     $this->translation->addLanguage('fr');
+it('throws an exception if a language exists', function () {
+    $this->translation->addLanguage('en');
+})->throws(LanguageExistsException::class);
 
-//     $this->assertTrue(file_exists(__DIR__.'/fixtures/lang/fr.json'));
-//     $this->assertTrue(file_exists(__DIR__.'/fixtures/lang/fr'));
+it('can add a new language', function () {
+    $this->translation->addLanguage('pt');
 
-//     rmdir(__DIR__.'/fixtures/lang/fr');
-//     unlink(__DIR__.'/fixtures/lang/fr.json');
-// });
+    expect(file_exists(__DIR__.'/../fixtures/lang/pt.json'))->toBeTrue();
+    expect(file_exists(__DIR__.'/../fixtures/lang/pt'))->toBeTrue();
 
-// test('it_can_add_a_new_translation_to_a_new_group', function () {
-//     $this->translation->addShortKeyTranslation('es', 'test', 'hello', 'Hola!');
+    rmdir(__DIR__.'/../fixtures/lang/pt');
+    unlink(__DIR__.'/../fixtures/lang/pt.json');
+});
 
-//     $translations = $this->translation->allTranslationsFor('es');
+it('can add a new translation to a group', function () {
+    $this->translation->addShortKeyTranslation('jp', 'test', 'hello', 'Kon\'nichiwa');
 
-//     $this->assertEquals(['test' => ['hello' => 'Hola!']], $translations->toArray()['short']);
+    $translations = $this->translation->allTranslationsFor('jp');
 
-//     unlink(__DIR__.'/fixtures/lang/es/test.php');
-// });
+    expect($translations->short()->toArray())
+        ->toEqual(['test' => ['hello' => 'Kon\'nichiwa']]);
 
-// test('it_can_add_a_new_translation_to_an_existing_translation_group', function () {
-//     $this->translation->addShortKeyTranslation('en', 'test', 'test', 'Testing');
+    unlink(__DIR__.'/../fixtures/lang/jp/test.php');
+});
 
-//     $translations = $this->translation->allTranslationsFor('en');
+it('can add a new translation to an existing translation group', function () {
+    $this->translation->addShortKeyTranslation('es', 'test', 'test', 'Pruebas');
 
-//     $this->assertEquals(['test' => ['hello' => 'Hello', 'whats_up' => 'What\'s up!', 'test' => 'Testing']], $translations->toArray()['short']);
+    $translations = $this->translation->allTranslationsFor('es');
 
-//     file_put_contents(
-//         app()['path.lang'].'/en/test.php',
-//         "<?php\n\nreturn ".var_export(['hello' => 'Hello', 'whats_up' => 'What\'s up!'], true).';'.\PHP_EOL
-//     );
-// });
+    expect($translations->short()->toArray()['test'])
+        ->toEqual(['hello' => 'Hola', 'whats_up' => '¡Qué pasa!', 'test' => 'Pruebas']);
 
-// test('it_can_add_a_new_string_key_translation', function () {
-//     $this->translation->addStringKeyTranslation('es', 'string', 'Hello', 'Hola!');
+    file_put_contents(
+        $this->app['path.lang'].'/es/test.php',
+        "<?php\n\nreturn ".var_export(['hello' => 'Hola', 'whats_up' => '¡Qué pasa!'], true).';'.\PHP_EOL
+    );
+});
 
-//     $translations = $this->translation->allTranslationsFor('es');
+it('can add a new string key translation', function () {
+    $this->translation->addStringKeyTranslation('es', 'string', 'Hello', 'Hola!');
 
-//     $this->assertEquals(['string' => ['Hello' => 'Hola!']], $translations->toArray()['string']);
+    $translations = $this->translation->allTranslationsFor('es');
 
-//     unlink(__DIR__.'/fixtures/lang/es.json');
-// });
+    expect($translations->string()->toArray())
+        ->toEqual(['string' => ['Hello' => 'Hola!']]);
 
-// test('it_can_add_a_new_string_key_translation_to_an_existing_language', function () {
-//     $this->translation->addStringKeyTranslation('en', 'string', 'Test', 'Testing');
+    unlink(__DIR__.'/../fixtures/lang/es.json');
+});
 
-//     $translations = $this->translation->allTranslationsFor('en');
+it('can add a new string key translation to an existing language', function () {
+    $this->translation->addStringKeyTranslation('en', 'string', 'Test', 'Testing');
 
-//     $this->assertEquals(['string' => ['Hello' => 'Hello', 'What\'s up' => 'What\'s up!', 'Test' => 'Testing']], $translations->toArray()['string']);
+    $translations = $this->translation->allTranslationsFor('en');
 
-//     file_put_contents(
-//         app()['path.lang'].'/en.json',
-//         json_encode((object) ['Hello' => 'Hello', 'What\'s up' => 'What\'s up!'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
-//     );
-// });
+    expect($translations->string()->toArray())
+        ->toEqual(['string' => ['Hello' => 'Hello', "What's up" => "What's up!", 'Test' => 'Testing'], 'laravel-translation::string' => ['key' => 'value']]);
 
-// test('it_can_get_a_collection_of_group_names_for_a_given_language', function () {
-//     $groups = $this->translation->allShortKeyGroupsFor('en');
+    file_put_contents(
+        $this->app['path.lang'].'/en.json',
+        json_encode((object) ['Hello' => 'Hello', 'What\'s up' => 'What\'s up!'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+    );
+});
 
-//     $this->assertEquals($groups->toArray(), ['test']);
-// });
+it('can get a= collection of group names for a given language', function () {
+    $groups = $this->translation->allShortKeyGroupsFor('de');
 
-// test('it_can_merge_a_language_with_the_base_language', function () {
+    $this->assertEquals($groups->toArray(), ['errors', 'validation']);
+});
+
+// it('it can merge a language with the base language', function () {
 //     $this->translation->addShortKeyTranslation('es', 'test', 'hello', 'Hola!');
 //     $translations = $this->translation->getSourceLanguageTranslationsWith('es');
 

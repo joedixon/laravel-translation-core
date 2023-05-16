@@ -14,7 +14,10 @@ abstract class Translation
 
     protected string $sourceLanguage;
 
-    abstract public function map(): Collection|string|null;
+    /**
+     * Get a map of each language with it's associated file path.
+     */
+    abstract public function map(string|null $key = null, string|null $default = null): Collection|string|null;
 
     /**
      * Get all languages.
@@ -56,6 +59,9 @@ abstract class Translation
      */
     abstract public function addStringKeyTranslation(string $language, string $vendor, string $key, string $value = ''): void;
     
+    /**
+     * Get all the translations for a given language key.
+     */
     abstract public function allTranslationsFromMap(string $key): Collection;
 
     /**

@@ -22,7 +22,10 @@ class File extends Translation
     ) {
     }
 
-    public function map($key = null, $default = null): Collection|string|null
+    /**
+     * Get a map of each language with it's associated file path.
+     */
+    public function map(string|null $key = null, string|null $default = null): Collection|string|null
     {
         $map = Collection::make($this->disk->allFiles($this->languageFilesPath))
             ->flatMap(function ($file) {
@@ -93,6 +96,9 @@ class File extends Translation
         }
     }
 
+    /**
+     * Get all the translations for a given language key.
+     */
     public function allTranslationsFromMap(string $key): Collection
     {
         if (! $file = $this->map($key)) {
