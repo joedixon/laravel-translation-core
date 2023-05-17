@@ -41,7 +41,7 @@ class File extends Translation
     /**
      * Get all languages.
      */
-    public function allLanguages(): Collection
+    public function languages(): Collection
     {
         $directories = collect($this->disk->directories($this->languageFilesPath));
 
@@ -55,7 +55,7 @@ class File extends Translation
 
         $fileLanguages = collect($this->disk->allFiles($this->languageFilesPath))
             ->filter(fn ($file) => $file->getExtension() === 'json')
-            ->mapWithKeys(fn ($file) => [Str::replace(".{$file->getExtension()}", '', $file->getFilename()) => Str::replace(".{$file->getExtension()}", '', $file->getFilename())]);
+            ->mapWithKeys(fn ($file) => [$language = Str::replace(".{$file->getExtension()}", '', $file->getFilename()) => $language]);
 
         return $directoryLanguages->merge($fileLanguages);
     }
@@ -65,7 +65,7 @@ class File extends Translation
      */
     public function languageExists(string $language): bool
     {
-        return $this->allLanguages()->contains($language);
+        return $this->languages()->contains($language);
     }
 
     /**
@@ -79,10 +79,10 @@ class File extends Translation
             );
         }
 
-        $this->disk->makeDirectory("{$this->languageFilesPath}".DIRECTORY_SEPARATOR."$language");
+        $this->disk->makeDirectory($this->path($language));
 
-        if (! $this->disk->exists("{$this->languageFilesPath}".DIRECTORY_SEPARATOR."{$language}.json")) {
-            $this->saveStringKeyTranslations($language, collect(['string' => collect()]));
+        if (! $this->disk->exists($this->path("{$language}.json"))) {
+            $this->saveStringTranslations($language, collect());
         }
     }
 
@@ -118,5 +118,17 @@ class File extends Translation
             ->replace(DIRECTORY_SEPARATOR, '.', $path);
 
         return [(string) $key => (string) $path];
+    }
+
+    /**
+     * Generate a path from the given arguments.
+     *
+     * @param  array<int, string>  ...$args
+     */
+    protected function path(...$args): string
+    {
+        $path = implode(DIRECTORY_SEPARATOR, $args);
+
+        return Str::startsWith($path, $this->languageFilesPath) ? $path : $this->languageFilesPath.DIRECTORY_SEPARATOR.$path;
     }
 }

@@ -10,7 +10,7 @@ trait InteractsWithStringKeys
     /**
      * Get string key translations for a given language.
      */
-    public function allStringKeyTranslationsFor(string $language): Collection
+    public function stringKeyTranslations(string $language): Collection
     {
         $files = collect($this->disk->allFiles($this->languageFilesPath));
 
@@ -20,49 +20,52 @@ trait InteractsWithStringKeys
             if (Str::contains($file->getPathname(), 'vendor')) {
                 $vendor = Str::before(Str::after($file->getPathname(), 'vendor'.DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
 
-                return ["{$vendor}::string" => json_decode($this->disk->get($file), true)];
+                return [$vendor => json_decode($this->disk->get($file), true)];
             }
 
             $translations = json_decode($this->disk->get($file), true);
 
-            return ['string' => $translations !== null ? $translations : []];
+            return $translations !== null ? $translations : [];
         });
     }
 
     /**
      * Add a string key translation.
      */
-    public function addStringKeyTranslation(string $language, string $vendor, string $key, string $value = ''): void
+    public function addStringKeyTranslation(string $language, string $key, string $value = '', string|null $vendor = null): void
     {
         if (! $this->languageExists($language)) {
             $this->addLanguage($language);
         }
 
-        $translations = $this->allStringKeyTranslationsFor($language);
-        $vendorTranslations = $translations->get($vendor) ?: [];
-        $vendorTranslations[$key] = $value;
-        $translations->put($vendor, $vendorTranslations);
+        $translations = $this->stringKeyTranslations($language)->toArray();
 
-        $this->saveStringKeyTranslations($language, $translations);
+        if ($vendor) {
+            isset($translations[$vendor]) ? $translations[$vendor][$key] = $value : $translations[$vendor] = [$key => $value];
+        } else {
+            $translations[$key] = $value;
+        }
+
+        $this->saveStringTranslations($language, collect($translations));
     }
 
     /**
      * Save string key translations.
      */
-    private function saveStringKeyTranslations(string $language, Collection $translations): void
+    private function saveStringTranslations(string $language, Collection $translations): void
     {
-        foreach ($translations as $group => $translation) {
-            $vendor = Str::before($group, '::string');
-            $languageFilePath = $vendor !== 'string' ? 'vendor'.DIRECTORY_SEPARATOR."{$vendor}".DIRECTORY_SEPARATOR."{$language}.json" : "{$language}.json";
-            $json = json_encode((object) $translations->get($group), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            if ($json === false) {
-                continue;
-            }
+        [$root, $vendor] = $translations->partition(fn ($value) => ! is_array($value));
 
+        $this->disk->put(
+            $this->path("{$language}.json"),
+            json_encode((object) $root->toArray(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+        );
+
+        $vendor->each(function ($translations, $vendor) use ($language) {
             $this->disk->put(
-                "{$this->languageFilesPath}".DIRECTORY_SEPARATOR."{$languageFilePath}",
-                $json
+                $this->path('vendor', $vendor, "{$language}.json"),
+                json_encode((object) $translations, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
             );
-        }
+        });
     }
 }

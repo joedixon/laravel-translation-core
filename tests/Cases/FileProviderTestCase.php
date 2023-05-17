@@ -16,6 +16,6 @@ class FileProviderTestCase extends TestCase
 
     protected function defineEnvironment($app)
     {
-        $app->useLangPath(__DIR__.'/../fixtures/lang');
+        $app->useLangPath(__DIR__.'/../lang');
     }
 }

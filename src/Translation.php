@@ -5,7 +5,6 @@ namespace JoeDixon\TranslationCore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Str;
 use JoeDixon\TranslationCore\Events\TranslationAdded;
 
 abstract class Translation
@@ -20,7 +19,7 @@ abstract class Translation
     /**
      * Get all languages.
      */
-    abstract public function allLanguages(): Collection;
+    abstract public function languages(): Collection;
 
     /**
      * Determine whether the given language exists.
@@ -35,12 +34,12 @@ abstract class Translation
     /**
      * Get short key translations for a given language.
      */
-    abstract public function allShortKeyTranslationsFor(string $language): Collection;
+    abstract public function shortKeyTranslations(string $language): Collection;
 
     /**
      * Get all the short key groups for a given language.
      */
-    abstract public function allShortKeyGroupsFor(string $language): Collection;
+    abstract public function shortKeyGroups(string $language): Collection;
 
     /**
      * Add a short key translation.
@@ -50,13 +49,13 @@ abstract class Translation
     /**
      * Get string key translations for a given language.
      */
-    abstract public function allStringKeyTranslationsFor(string $language): Collection;
+    abstract public function stringKeyTranslations(string $language): Collection;
 
     /**
      * Add a string key translation.
      */
-    abstract public function addStringKeyTranslation(string $language, string $vendor, string $key, string $value = ''): void;
-    
+    abstract public function addStringKeyTranslation(string $language, string $key, string $value = '', string|null $vendor = null): void;
+
     /**
      * Get all the translations for a given language key.
      */
@@ -67,7 +66,7 @@ abstract class Translation
      */
     public function allTranslations(): Collection
     {
-        return $this->allLanguages()->mapWithKeys(
+        return $this->languages()->mapWithKeys(
             fn ($name, $language) => [$language => $this->allTranslationsFor($language)]
         );
     }
@@ -78,11 +77,11 @@ abstract class Translation
     public function allTranslationsFor(string $language): Translations
     {
         return new Translations(
-            $this->allStringKeyTranslationsFor($language),
-            $this->allShortKeyTranslationsFor($language),
+            $this->stringKeyTranslations($language),
+            $this->shortKeyTranslations($language),
         );
     }
-    
+
     public function add(Request $request, string $language, bool $isGroupTranslation): void
     {
         $namespace = $request->has('namespace') && $request->get('namespace') ? "{$request->get('namespace')}::" : '';
@@ -93,7 +92,7 @@ abstract class Translation
         if ($isGroupTranslation) {
             $this->addShortKeyTranslation($language, $group, $key, $value);
         } else {
-            $this->addStringKeyTranslation($language, 'string', $key, $value);
+            $this->addStringKeyTranslation($language, $key, $value, null);
         }
 
         Event::dispatch(new TranslationAdded($language, $group ?: 'string', $key, $value));
