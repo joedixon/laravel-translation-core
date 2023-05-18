@@ -16,8 +16,8 @@ class TranslationManager extends Manager
     protected function createFileDriver(): File
     {
         return new File(
-            new Filesystem, 
-            $this->container->make('path.lang'), 
+            new Filesystem,
+            $this->container->make('path.lang'),
             config('app.locale')
         );
     }

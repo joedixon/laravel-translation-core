@@ -158,7 +158,7 @@ it('can return a full list of available keys across all languages', function () 
     expect($this->translation->keys())
         ->toEqual(Translations::make(
             collect([
-                'Hello' => '', 
+                'Hello' => '',
                 "What's up" => '',
                 'laravel-translation' => ['key' => ''],
             ]),

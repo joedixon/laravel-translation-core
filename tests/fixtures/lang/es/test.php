@@ -1,6 +1,6 @@
 <?php
 
-return array (
-  'hello' => 'Hola!',
-  'whats_up' => '¡Qué pasa!',
-);
+return [
+    'hello' => 'Hola!',
+    'whats_up' => '¡Qué pasa!',
+];

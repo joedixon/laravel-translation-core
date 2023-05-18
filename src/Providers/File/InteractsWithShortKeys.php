@@ -125,7 +125,7 @@ trait InteractsWithShortKeys
         }
 
         $this->disk->put(
-            $this->path($language, "{$group}.php"), 
+            $this->path($language, "{$group}.php"),
             "<?php\n\nreturn ".var_export($translations->toArray(), true).';'.\PHP_EOL
         );
     }
@@ -143,7 +143,7 @@ trait InteractsWithShortKeys
         }
 
         $this->disk->put(
-            $this->path($directory, "{$group}.php"), 
+            $this->path($directory, "{$group}.php"),
             "<?php\n\nreturn ".var_export($translations->toArray(), true).';'.\PHP_EOL
         );
     }

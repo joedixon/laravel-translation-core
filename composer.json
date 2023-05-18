@@ -19,7 +19,8 @@
     "require-dev": {
         "mockery/mockery": "^1.0.0",
         "pestphp/pest": "^2.0",
-        "orchestra/testbench": "^8.5"
+        "orchestra/testbench": "^8.5",
+        "laravel/pint": "^1.10"
     },
     "autoload": {
         "psr-4": {

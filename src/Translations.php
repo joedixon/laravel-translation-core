@@ -2,7 +2,6 @@
 
 namespace JoeDixon\TranslationCore;
 
-use Closure;
 use Illuminate\Support\Collection;
 
 class Translations

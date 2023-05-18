@@ -42,7 +42,7 @@ class Scanner
                         if ($groupedMatches = $this->groupedMatches($key)) {
                             [$file, $k] = explode('.', $groupedMatches[0], 2);
                             $results->shortKeyTranslations->put(
-                                $file, 
+                                $file,
                                 array_merge($results->shortKeyTranslations->get($file, []), [$k => ''])
                             );
 
