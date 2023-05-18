@@ -98,13 +98,16 @@ abstract class Translation
         Event::dispatch(new TranslationAdded($language, $group ?: 'string', $key, $value));
     }
 
-    public function normalizedKeys(): Translations
+    /**
+     * Return a set of translation keys merged across all languages.
+     */
+    public function keys(): Translations
     {
         return $this->allTranslations()->reduce(function ($carry, $item) {
             $carry->shortKeyTranslations = $carry->shortKeyTranslations->mergeRecursive($item->shortKeyTranslations);
             $carry->stringKeyTranslations = $carry->stringKeyTranslations->mergeRecursive($item->stringKeyTranslations);
 
             return $carry;
-        }, Translations::make())->emptyValues();
+        }, Translations::make())->reset();
     }
 }

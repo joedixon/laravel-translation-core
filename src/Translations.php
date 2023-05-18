@@ -34,11 +34,43 @@ class Translations
         return $this->shortKeyTranslations;
     }
 
+    /**
+     * Create a new instance of the class.
+     */
     public static function make(?Collection $stringKeyTranslations = null, ?Collection $shortKeyTranslations = null): self
     {
         return new static(
-            $stringKeyTranslations ?? new Collection(),
-            $shortKeyTranslations ?? new Collection(),
+            $stringKeyTranslations ?? collect(),
+            $shortKeyTranslations ?? collect(),
         );
+    }
+
+    /**
+     * Reset the values of the translations.
+     */
+    public function reset()
+    {
+        $this->stringKeyTranslations = $this->resetCollection($this->stringKeyTranslations);
+        $this->shortKeyTranslations = $this->resetCollection($this->shortKeyTranslations);
+
+        return $this;
+    }
+
+    /**
+     * Reset the values of a collection.
+     */
+    public function resetCollection(Collection $collection): Collection
+    {
+        return $collection->map(function ($item) {
+            if ($item instanceof Collection) {
+                return $this->resetCollection($item);
+            }
+
+            if (is_array($item) && (! array_is_list($item) || empty($item))) {
+                return $this->resetCollection(collect($item))->toArray();
+            }
+
+            return '';
+        });
     }
 }

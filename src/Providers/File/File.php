@@ -82,7 +82,7 @@ class File extends Translation
         $this->disk->makeDirectory($this->path($language));
 
         if (! $this->disk->exists($this->path("{$language}.json"))) {
-            $this->saveStringTranslations($language, collect());
+            $this->saveStringKeyTranslations($language, collect());
         }
     }
 

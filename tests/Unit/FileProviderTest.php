@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use JoeDixon\Translation\Events\TranslationAdded;
 use JoeDixon\TranslationCore\Exceptions\LanguageExistsException;
 use JoeDixon\TranslationCore\Translation;
+use JoeDixon\TranslationCore\Translations;
 use Tests\Cases\FileProviderTestCase;
 
 uses(FileProviderTestCase::class);
@@ -132,34 +133,6 @@ it('can get a collection of group names for a given language', function () {
     $this->assertEquals($groups->toArray(), ['errors', 'validation']);
 });
 
-// it('it can merge a language with the base language', function () {
-//     $this->translation->addShortKeyTranslation('es', 'test', 'hello', 'Hola!');
-//     $translations = $this->translation->getSourceLanguageTranslationsWith('es');
-
-//     $this->assertEquals($translations->toArray(), [
-//         'short' => [
-//             'test' => [
-//                 'hello' => ['en' => 'Hello', 'es' => 'Hola!'],
-//                 'whats_up' => ['en' => "What's up!", 'es' => ''],
-//             ],
-//         ],
-//         'string' => [
-//             'string' => [
-//                 'Hello' => [
-//                     'en' => 'Hello',
-//                     'es' => '',
-//                 ],
-//                 "What's up" => [
-//                     'en' => "What's up!",
-//                     'es' => '',
-//                 ],
-//             ],
-//         ],
-//     ]);
-
-//     unlink(__DIR__.'/fixtures/lang/es/test.php');
-// });
-
 it('can add a vendor namespaced translation', function () {
     $this->translation->addShortKeyTranslation('es', 'translation-test::test', 'hello', 'Hola!');
 
@@ -183,37 +156,56 @@ it('can add nested vendor namespaced translations', function () {
         ]);
 });
 
-// test('it_can_merge_a_namespaced_language_with_the_base_language', function () {
-//     $this->translation->addShortKeyTranslation('en', 'translation-test::test', 'hello', 'Hello');
-//     $this->translation->addShortKeyTranslation('es', 'translation-test::test', 'hello', 'Hola!');
-//     $translations = $this->translation->getSourceLanguageTranslationsWith('es');
-
-//     $this->assertEquals($translations->toArray(), [
-//         'short' => [
-//             'test' => [
-//                 'hello' => ['en' => 'Hello', 'es' => ''],
-//                 'whats_up' => ['en' => "What's up!", 'es' => ''],
-//             ],
-//             'translation-test::test' => [
-//                 'hello' => ['en' => 'Hello', 'es' => 'Hola!'],
-//             ],
-//         ],
-//         'string' => [
-//             'string' => [
-//                 'Hello' => [
-//                     'en' => 'Hello',
-//                     'es' => '',
-//                 ],
-//                 "What's up" => [
-//                     'en' => "What's up!",
-//                     'es' => '',
-//                 ],
-//             ],
-//         ],
-//     ]);
-
-//     File::deleteDirectory(__DIR__.'/fixtures/lang/vendor');
-// });
+it('can return a full list of available keys across all languages', function () {
+    expect($this->translation->keys())
+        ->toEqual(Translations::make(
+            collect([
+                'Hello' => '', 
+                "What's up" => '',
+                'laravel-translation' => ['key' => ''],
+            ]),
+            collect([
+                'errors' => [],
+                'validation' => [
+                    'filled' => '',
+                    'gt' => [
+                        'array' => '',
+                        'file' => '',
+                        'numeric' => '',
+                        'string' => '',
+                    ],
+                    'before_or_equal' => '',
+                    'between' => [
+                        'array' => '',
+                        'file' => '',
+                        'numeric' => '',
+                        'string' => '',
+                    ],
+                ],
+                'empty' => [],
+                'home' => [
+                    'title' => '',
+                ],
+                'products' => [
+                    'products' => [
+                        'product_one' => [
+                            'title' => '',
+                            'description' => '',
+                        ],
+                    ],
+                    'title' => '',
+                ],
+                'laravel-translation::laravel-translation' => [
+                    'key' => '',
+                ],
+                'laravel-translation::validation' => [],
+                'test' => [
+                    'hello' => '',
+                    'whats_up' => '',
+                ],
+            ])
+        ));
+});
 
 // test('a_list_of_languages_can_be_viewed', function () {
 //     $this->get(config('translation.ui_url'))

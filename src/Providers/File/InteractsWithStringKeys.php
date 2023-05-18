@@ -46,13 +46,13 @@ trait InteractsWithStringKeys
             $translations[$key] = $value;
         }
 
-        $this->saveStringTranslations($language, collect($translations));
+        $this->saveStringKeyTranslations($language, collect($translations));
     }
 
     /**
      * Save string key translations.
      */
-    private function saveStringTranslations(string $language, Collection $translations): void
+    private function saveStringKeyTranslations(string $language, Collection $translations): void
     {
         [$root, $vendor] = $translations->partition(fn ($value) => ! is_array($value));
 

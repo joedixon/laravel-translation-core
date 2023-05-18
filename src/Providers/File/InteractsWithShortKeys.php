@@ -12,9 +12,7 @@ trait InteractsWithShortKeys
      */
     public function shortKeyTranslations(string $language): Collection
     {
-        return $this->shortFilesFor($language)->mapWithKeys(function ($group) {
-            // here we check if the path contains 'vendor' as these will be the
-            // files which need namespacing
+        return $this->shortKeyFiles($language)->mapWithKeys(function ($group) {
             if (Str::contains($group->getPathname(), 'vendor')) {
                 $vendor = Str::before(Str::after($group->getPathname(), 'vendor'.DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
 
@@ -32,7 +30,7 @@ trait InteractsWithShortKeys
      */
     public function shortKeyGroups(string $language): Collection
     {
-        return $this->shortFilesFor($language)->map(function ($file) {
+        return $this->shortKeyFiles($language)->map(function ($file) {
             if (Str::contains($file->getPathname(), 'vendor')) {
                 $vendor = Str::before(Str::after($file->getPathname(), 'vendor'.DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
 
@@ -63,21 +61,21 @@ trait InteractsWithShortKeys
         $values[$key] = $value;
         $translations->put($group, collect($values));
 
-        $this->saveShortTranslations($language, $group, collect($translations->get($group)));
+        $this->saveShortKeyTranslations($language, $group, collect($translations->get($group)));
     }
 
     /**
      * Add a new group of short key translations.
      */
-    protected function addShortGroup(string $language, string $group): void
+    protected function addShortKeyGroup(string $language, string $group): void
     {
-        $this->saveShortTranslations($language, $group, collect());
+        $this->saveShortKeyTranslations($language, $group, collect());
     }
 
     /**
      * Get all the short key files for a given language.
      */
-    protected function shortFilesFor(string $language): Collection
+    protected function shortKeyFiles(string $language): Collection
     {
         $path = $this->path($language);
 
@@ -88,8 +86,8 @@ trait InteractsWithShortKeys
         $groups = collect($this->disk->allFiles($path));
 
         // namespaced files reside in the vendor directory so we'll grab these
-        // the `vendorShortFilesFor` method
-        return $groups->merge($this->vendorShortFilesFor($language))
+        // the `vendorShortKeyFiles` method
+        return $groups->merge($this->vendorShortKeyFiles($language))
             ->filter(function ($file) {
                 return Str::endsWith($file->getBasename(), '.php');
             });
@@ -98,7 +96,7 @@ trait InteractsWithShortKeys
     /**
      * Get all the vendor short key files for a given language.
      */
-    protected function vendorShortFilesFor(string $language): Collection
+    protected function vendorShortKeyFiles(string $language): Collection
     {
         if (! $this->disk->exists("{$this->languageFilesPath}".DIRECTORY_SEPARATOR.'vendor')) {
             return collect();
@@ -118,23 +116,24 @@ trait InteractsWithShortKeys
     /**
      * Save short key translations.
      */
-    protected function saveShortTranslations(string $language, string $group, Collection $translations): void
+    protected function saveShortKeyTranslations(string $language, string $group, Collection $translations): void
     {
-        // here we check if it's a namespaced translation which need saving to a
-        // different path
         if (Str::contains($group, '::')) {
-            $this->saveNamespacedShortTranslations($language, $group, $translations);
+            $this->saveNamespacedShortKeyTranslations($language, $group, $translations);
 
             return;
         }
 
-        $this->disk->put($this->path($language, "{$group}.php"), "<?php\n\nreturn ".var_export($translations->toArray(), true).';'.\PHP_EOL);
+        $this->disk->put(
+            $this->path($language, "{$group}.php"), 
+            "<?php\n\nreturn ".var_export($translations->toArray(), true).';'.\PHP_EOL
+        );
     }
 
     /**
      * Save namespaced short key translations.
      */
-    protected function saveNamespacedShortTranslations(string $language, string $group, Collection $translations): void
+    protected function saveNamespacedShortKeyTranslations(string $language, string $group, Collection $translations): void
     {
         [$namespace, $group] = explode('::', $group);
         $directory = $this->path('vendor', $namespace, $language);
@@ -143,6 +142,9 @@ trait InteractsWithShortKeys
             $this->disk->makeDirectory($directory, 0755, true);
         }
 
-        $this->disk->put($this->path($directory, "{$group}.php"), "<?php\n\nreturn ".var_export($translations->toArray(), true).';'.\PHP_EOL);
+        $this->disk->put(
+            $this->path($directory, "{$group}.php"), 
+            "<?php\n\nreturn ".var_export($translations->toArray(), true).';'.\PHP_EOL
+        );
     }
 }
