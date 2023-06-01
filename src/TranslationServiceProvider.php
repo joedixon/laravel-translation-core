@@ -18,6 +18,7 @@ class TranslationServiceProvider extends ServiceProvider
     {
         $this->publishConfiguration();
         $this->loadTranslations();
+        $this->loadMigrations();
         $this->registerContainerBindings();
     }
 
@@ -65,6 +66,20 @@ class TranslationServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/lang' => lang_path('vendor/translation'),
         ]);
+    }
+
+    /**
+     * Load package migrations.
+     *
+     * @return void
+     */
+    private function loadMigrations()
+    {
+        if (config('translation.driver') !== 'eloquent') {
+            return;
+        }
+
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 
     /**
