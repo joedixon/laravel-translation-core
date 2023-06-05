@@ -6,6 +6,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
+use JoeDixon\TranslationCore\Console\Commands\SynchroniseTranslations;
 
 class TranslationServiceProvider extends ServiceProvider
 {
@@ -30,6 +31,7 @@ class TranslationServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfiguration();
+        $this->registerCommands();
     }
 
     /**
@@ -66,6 +68,20 @@ class TranslationServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/lang' => lang_path('vendor/translation'),
         ]);
+    }
+
+    /**
+     * Register package commands.
+     *
+     * @return void
+     */
+    private function registerCommands()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                SynchroniseTranslations::class,
+            ]);
+        }
     }
 
     /**
