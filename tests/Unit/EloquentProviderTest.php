@@ -3,9 +3,12 @@
 namespace JoeDixon\Translation\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use JoeDixon\TranslationCore\Exceptions\LanguageExistsException;
 use JoeDixon\TranslationCore\Providers\Eloquent\Language;
+use JoeDixon\TranslationCore\Providers\Eloquent\Translation as EloquentTranslation;
 use JoeDixon\TranslationCore\Translation;
 use JoeDixon\TranslationCore\Translations;
 use Tests\Cases\EloquentProviderTestCase;
@@ -14,7 +17,14 @@ uses(EloquentProviderTestCase::class);
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
+    File::deleteDirectory($this->app->langPath());
+    File::copyDirectory(__DIR__.'/../fixtures/lang', $this->app->langPath());
+    Artisan::call('translation:sync-translations file eloquent');
     $this->translation = $this->app->make(Translation::class);
+});
+
+afterEach(function () {
+    File::deleteDirectory($this->app->langPath());
 });
 
 // it('can build a map of translation files', function () {
@@ -27,43 +37,43 @@ beforeEach(function () {
     //     ->toEqual('en.json');
 // });
 
-it('returns all languages', function () {
-    $newLanguages = Language::factory(2)->create();
-    $newLanguages = $newLanguages->mapWithKeys(function ($language) {
-        return [$language->language => $language->name];
-    })->toArray();
+it('does a test', function () {
 
-    $languages = $this->translation->languages();
-
-    expect($languages)->toHaveCount(2);
-    expect($languages->toArray())->toEqual($newLanguages);
+    dd(Language::all()->toArray(), EloquentTranslation::all()->toArray());
 });
 
-// it('returns all translations', function () {
-//     $translations = $this->translation->allTranslations();
+it('returns all languages', function () {
+    $languages = $this->translation->languages();
 
-//     expect(array_keys($translations->get('en')->short()->toArray()))
-//         ->toEqual(['empty', 'home', 'products', 'validation', 'laravel-translation::laravel-translation', 'laravel-translation::validation']);
-//     expect($translations->get('en')->short()['products'])
-//         ->toEqual(['products' => ['product_one' => ['title' => 'Product 1', 'description' => 'This is product one']], 'title' => 'Product 1']);
-//     expect($translations->get('en')->string()->toArray())
-//         ->toEqual(['Hello' => 'Hello', "What's up" => "What's up!", 'laravel-translation' => ['key' => 'value']]);
-//     $this->assertArrayHasKey('de', $translations->toArray());
-//     $this->assertArrayHasKey('en', $translations->toArray());
-//     $this->assertArrayHasKey('es', $translations->toArray());
-//     $this->assertArrayHasKey('jp', $translations->toArray());
-// });
+    expect($languages)->toHaveCount(3);
+    expect($languages->toArray())
+        ->toEqual(['de' => 'de', 'en' => 'en', 'es' => 'es']);
+});
 
-// it('returns all translations for a given language', function () {
-//     $translations = $this->translation->allTranslationsFor('es');
+it('returns all translations', function () {
+    $translations = $this->translation->allTranslations();
 
-//     expect($translations->string())->toBeEmpty();
-//     expect($translations->short()->toArray())->toEqual(['empty' => [], 'products' => ['title' => 'Product 1'], 'test' => ['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!']]);
-// });
+    expect(array_keys($translations->get('en')->short()->toArray()))
+        ->toEqual(['home', 'products', 'validation', 'laravel-translation::laravel-translation']);
+    expect($translations->get('en')->short()['products'])
+        ->toEqual(['products' => ['product_one' => ['title' => 'Product 1', 'description' => 'This is product one']], 'title' => 'Product 1']);
+    expect($translations->get('en')->string()->toArray())
+        ->toEqual(['Hello' => 'Hello', "What's up" => "What's up!", 'laravel-translation' => ['key' => 'value']]);
+    $this->assertArrayHasKey('de', $translations->toArray());
+    $this->assertArrayHasKey('en', $translations->toArray());
+    $this->assertArrayHasKey('es', $translations->toArray());
+});
 
-// it('throws an exception if a language exists', function () {
-//     $this->translation->addLanguage('en');
-// })->throws(LanguageExistsException::class);
+it('returns all translations for a given language', function () {
+    $translations = $this->translation->allTranslationsFor('es');
+
+    expect($translations->string())->toBeEmpty();
+    expect($translations->short()->toArray())->toEqual(['products' => ['title' => 'Product 1'], 'test' => ['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!']]);
+});
+
+it('throws an exception if a language exists', function () {
+    $this->translation->addLanguage('en');
+})->throws(LanguageExistsException::class);
 
 // it('can add a new language', function () {
 //     $this->translation->addLanguage('pt');

@@ -2,10 +2,7 @@
 
 namespace JoeDixon\TranslationCore;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Event;
-use JoeDixon\TranslationCore\Events\TranslationAdded;
 
 abstract class Translation
 {
@@ -80,22 +77,6 @@ abstract class Translation
             $this->stringKeyTranslations($language),
             $this->shortKeyTranslations($language),
         );
-    }
-
-    public function add(Request $request, string $language, bool $isGroupTranslation): void
-    {
-        $namespace = $request->has('namespace') && $request->get('namespace') ? "{$request->get('namespace')}::" : '';
-        $group = $namespace.$request->get('group');
-        $key = $request->get('key');
-        $value = $request->get('value') ?: '';
-
-        if ($isGroupTranslation) {
-            $this->addShortKeyTranslation($language, $group, $key, $value);
-        } else {
-            $this->addStringKeyTranslation($language, $key, $value, null);
-        }
-
-        Event::dispatch(new TranslationAdded($language, $group ?: 'string', $key, $value));
     }
 
     /**

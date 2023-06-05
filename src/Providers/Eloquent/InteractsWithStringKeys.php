@@ -13,24 +13,21 @@ trait InteractsWithStringKeys
     {
         $translations = $this->getLanguage($language)
             ->translations()
-            ->where('group', 'like', '%string')
-            ->orWhereNull('group')
+            ->whereNull('group')
             ->get()
-            ->groupBy('group');
+            ->groupBy('vendor');
 
-        // if there is no group, this is a legacy translation so we need to
-        // update to 'single'. We do this here so it only happens once.
-        if ($this->hasLegacyGroups($translations->keys())) {
-            Translation::whereNull('group')->update(['group' => 'string']);
-            // if any legacy groups exist, rerun the method so we get the
-            // updated keys.
-            return $this->stringKeyTranslations($language);
-        }
+        return $translations->mapWithKeys(function ($translations, $vendor) {
+            // Root translations are stored with a blank vendor
+            if($vendor === '') {
+                return $translations->mapWithKeys(function ($translation) {
+                    return [$translation->key => $translation->value];
+                });
+            }
 
-        return $translations->map(function ($translations) {
-            return $translations->mapWithKeys(function ($translation) {
+            return [$vendor => $translations->mapWithKeys(function ($translation) {
                 return [$translation->key => $translation->value];
-            });
+            })];
         });
     }
 
@@ -42,7 +39,7 @@ trait InteractsWithStringKeys
         $this->getOrCreateLanguage($language)
             ->translations()
             ->updateOrCreate([
-                'group' => $vendor,
+                'vendor' => $vendor,
                 'key' => $key,
             ], [
                 'key' => $key,

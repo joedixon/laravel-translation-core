@@ -2,6 +2,7 @@
 
 namespace JoeDixon\TranslationCore\Providers\Eloquent;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 trait InteractsWithShortKeys
@@ -14,14 +15,15 @@ trait InteractsWithShortKeys
         $translations = $this->getLanguage($language)
             ->translations()
             ->whereNotNull('group')
-            ->where('group', 'not like', '%string')
             ->get()
             ->groupBy('group');
 
         return $translations->map(function ($translations) {
-            return $translations->mapWithKeys(function ($translation) {
-                return [$translation->key => $translation->value];
-            });
+            return Arr::undot(
+                $translations->mapWithKeys(function ($translation) {
+                    return [$translation->key => $translation->value];
+                })
+            );
         });
     }
 
@@ -57,17 +59,5 @@ trait InteractsWithShortKeys
                 'key' => $key,
                 'value' => $value,
             ]);
-    }
-
-    /**
-     * Determine if a set of single translations contains any legacy groups.
-     * Previously, this was handled by setting the group value to NULL, now
-     * we use 'single' to cater for vendor JSON language files.
-     */
-    protected function hasLegacyGroups(Collection $groups): bool
-    {
-        return $groups->filter(function ($key) {
-            return $key === '';
-        })->count() > 0;
     }
 }
