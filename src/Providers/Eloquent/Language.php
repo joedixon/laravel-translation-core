@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use JoeDixon\TranslationCore\Providers\Eloquent\Factories\LanguageFactory;
 
+/**
+ * \JoeDixon\TranslationCore\Providers\Eloquent\Language.
+ *
+ * @property int $id
+ * @property string|null $name
+ * @property string $language
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ */
 class Language extends Model
 {
     use HasFactory;

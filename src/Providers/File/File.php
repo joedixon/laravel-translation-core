@@ -115,15 +115,13 @@ class File extends Translation
 
         $key = Str::of($path)
             ->replaceLast(".{$file->getExtension()}", '')
-            ->replace(DIRECTORY_SEPARATOR, '.', $path);
+            ->replace(DIRECTORY_SEPARATOR, '.');
 
         return [(string) $key => (string) $path];
     }
 
     /**
      * Generate a path from the given arguments.
-     *
-     * @param  array<int, string>  ...$args
      */
     protected function path(...$args): string
     {

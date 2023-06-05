@@ -7,8 +7,8 @@ use Illuminate\Support\Collection;
 class Translations
 {
     /**
-     * @param  Collection<string,Collection<string,array|string>>  $stringKeyTranslations
-     * @param  Collection<string,Collection<string,array|string>>  $shortKeyTranslations
+     * @param  Collection<string, array|string>  $stringKeyTranslations
+     * @param  Collection<string, array>  $shortKeyTranslations
      * @return void
      */
     public function __construct(

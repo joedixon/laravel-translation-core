@@ -57,7 +57,7 @@ class SynchroniseTranslations extends Command
     }
 
     /**
-     * @param  Collection<string,Collection<string,string|array>>  $groups
+     * @param  Collection<string, array> $groups
      */
     private function mergeShortKeyTranslations(string $language, Collection $groups): void
     {
@@ -75,7 +75,7 @@ class SynchroniseTranslations extends Command
     }
 
     /**
-     * @param  Collection<string,Collection<string,string|array>>  $vendors
+     * @param  Collection<string,string|array>  $translations
      */
     private function mergeStringKeyTranslations(string $language, Collection $translations, string|null $vendor = null): void
     {

@@ -7,6 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use JoeDixon\TranslationCore\Providers\Eloquent\Factories\TranslationFactory;
 
+/**
+ * \JoeDixon\TranslationCore\Providers\Eloquent\Translation.
+ *
+ * @property int $id
+ * @property int $language_id
+ * @property string|null $vendor
+ * @property string|null $group
+ * @property string $key
+ * @property string|null $value
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ */
 class Translation extends Model
 {
     use HasFactory;
