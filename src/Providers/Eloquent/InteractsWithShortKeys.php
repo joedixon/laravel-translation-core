@@ -16,11 +16,13 @@ trait InteractsWithShortKeys
             ->translations()
             ->whereNotNull('group')
             ->get()
-            ->groupBy('group');
+            ->groupBy(function (Translation $item) {
+                return $item->vendor ? "{$item->vendor}::{$item->group}" : $item->group;
+            });
 
         return $translations->map(function ($translations) {
             return Arr::undot(
-                $translations->mapWithKeys(function ($translation) {
+                $translations->mapWithKeys(function (Translation $translation) {
                     return [$translation->key => $translation->value];
                 })
             );
@@ -43,7 +45,7 @@ trait InteractsWithShortKeys
     /**
      * Add a short key translation.
      */
-    public function addShortKeyTranslation(string $language, string $group, string $key, string $value = ''): void
+    public function addShortKeyTranslation(string $language, string $group, string $key, string $value = '', string|null $vendor = null): void
     {
         if (! $this->languageExists($language)) {
             $this->addLanguage($language);
@@ -53,9 +55,11 @@ trait InteractsWithShortKeys
             ->translations()
             ->updateOrCreate([
                 'group' => $group,
+                'vendor' => $vendor,
                 'key' => $key,
             ], [
                 'group' => $group,
+                'vendor' => $vendor,
                 'key' => $key,
                 'value' => $value,
             ]);

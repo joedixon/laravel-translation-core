@@ -37,11 +37,6 @@ afterEach(function () {
     //     ->toEqual('en.json');
 // });
 
-it('does a test', function () {
-
-    dd(Language::all()->toArray(), EloquentTranslation::all()->toArray());
-});
-
 it('returns all languages', function () {
     $languages = $this->translation->languages();
 
@@ -75,79 +70,77 @@ it('throws an exception if a language exists', function () {
     $this->translation->addLanguage('en');
 })->throws(LanguageExistsException::class);
 
-// it('can add a new language', function () {
-//     $this->translation->addLanguage('pt');
+it('can add a new language', function () {
+    $this->translation->addLanguage('pt');
 
-//     expect(file_exists($this->app->langPath('pt.json')))->toBeTrue();
-//     expect(file_exists($this->app->langPath('pt')))->toBeTrue();
-// });
+    $this->assertDatabaseHas('languages', ['language' => 'pt']);
+});
 
-// it('can add a new translation to a group', function () {
-//     $this->translation->addShortKeyTranslation('jp', 'test', 'hello', 'Kon\'nichiwa');
+it('can add a new translation to a group', function () {
+    $this->translation->addShortKeyTranslation('jp', 'test', 'hello', 'Kon\'nichiwa');
 
-//     $translations = $this->translation->allTranslationsFor('jp');
+    $translations = $this->translation->allTranslationsFor('jp');
 
-//     expect($translations->short()->toArray())
-//         ->toEqual(['test' => ['hello' => 'Kon\'nichiwa']]);
-// });
+    expect($translations->short()->toArray())
+        ->toEqual(['test' => ['hello' => 'Kon\'nichiwa']]);
+});
 
-// it('can add a new translation to an existing translation group', function () {
-//     $this->translation->addShortKeyTranslation('es', 'test', 'test', 'Pruebas');
+it('can add a new translation to an existing translation group', function () {
+    $this->translation->addShortKeyTranslation('es', 'test', 'test', 'Pruebas');
 
-//     $translations = $this->translation->allTranslationsFor('es');
+    $translations = $this->translation->allTranslationsFor('es');
 
-//     expect($translations->short()->toArray()['test'])
-//         ->toEqual(['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!', 'test' => 'Pruebas']);
-// });
+    expect($translations->short()->toArray()['test'])
+        ->toEqual(['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!', 'test' => 'Pruebas']);
+});
 
-// it('can add a new string key translation', function () {
-//     $this->translation->addStringKeyTranslation('es', 'Hello', 'Hola!');
+it('can add a new string key translation', function () {
+    $this->translation->addStringKeyTranslation('es', 'Hello', 'Hola!');
 
-//     $translations = $this->translation->allTranslationsFor('es');
+    $translations = $this->translation->allTranslationsFor('es');
 
-//     expect($translations->string()->toArray())
-//         ->toEqual(['Hello' => 'Hola!']);
-// });
+    expect($translations->string()->toArray())
+        ->toEqual(['Hello' => 'Hola!']);
+});
 
-// it('can add a new string key translation to an existing language', function () {
-//     $this->translation->addStringKeyTranslation('en', 'Test', 'Testing');
+it('can add a new string key translation to an existing language', function () {
+    $this->translation->addStringKeyTranslation('en', 'Test', 'Testing');
 
-//     $translations = $this->translation->allTranslationsFor('en');
+    $translations = $this->translation->allTranslationsFor('en');
 
-//     expect($translations->string()->toArray())
-//         ->toEqual(['Hello' => 'Hello', "What's up" => "What's up!", 'Test' => 'Testing', 'laravel-translation' => ['key' => 'value']]);
-// });
+    expect($translations->string()->toArray())
+        ->toEqual(['Hello' => 'Hello', "What's up" => "What's up!", 'Test' => 'Testing', 'laravel-translation' => ['key' => 'value']]);
+});
 
-// it('can add a new vendor string key translation', function () {
-//     $this->translation->addStringKeyTranslation('es', 'Hello', 'Hola!', 'laravel-translation');
+it('can add a new vendor string key translation', function () {
+    $this->translation->addStringKeyTranslation('es', 'Hello', 'Hola!', 'laravel-translation');
 
-//     $translations = $this->translation->allTranslationsFor('es');
+    $translations = $this->translation->allTranslationsFor('es');
 
-//     expect($translations->string()->toArray())
-//         ->toEqual(['laravel-translation' => ['Hello' => 'Hola!']]);
-// });
+    expect($translations->string()->toArray())
+        ->toEqual(['laravel-translation' => ['Hello' => 'Hola!']]);
+});
 
-// it('can add a new vendor string key translation to an existing language', function () {
-//     $this->translation->addStringKeyTranslation('en', 'Test', 'Testing', 'laravel-translation');
+it('can add a new vendor string key translation to an existing language', function () {
+    $this->translation->addStringKeyTranslation('en', 'Test', 'Testing', 'laravel-translation');
 
-//     $translations = $this->translation->allTranslationsFor('en');
+    $translations = $this->translation->allTranslationsFor('en');
 
-//     expect($translations->string()->toArray())
-//         ->toEqual(['Hello' => 'Hello', "What's up" => "What's up!", 'laravel-translation' => ['key' => 'value', 'Test' => 'Testing']]);
-// });
+    expect($translations->string()->toArray())
+        ->toEqual(['Hello' => 'Hello', "What's up" => "What's up!", 'laravel-translation' => ['key' => 'value', 'Test' => 'Testing']]);
+});
 
-// it('can get a collection of group names for a given language', function () {
-//     $groups = $this->translation->shortKeyGroups('de');
+it('can get a collection of group names for a given language', function () {
+    $groups = $this->translation->shortKeyGroups('de');
 
-//     $this->assertEquals($groups->toArray(), ['errors', 'validation']);
-// });
+    $this->assertEquals($groups->toArray(), ['validation']);
+});
 
-// it('can add a vendor namespaced translation', function () {
-//     $this->translation->addShortKeyTranslation('es', 'translation-test::test', 'hello', 'Hola!');
-
-//     expect($this->translation->allTranslationsFor('es')->short()['translation-test::test'])
-//         ->toEqual(['hello' => 'Hola!']);
-// });
+it('can add a vendor namespaced translation', function () {
+    $this->translation->addShortKeyTranslation('es', 'test', 'hello', 'Hola!', 'translation-test');
+    expect($this->translation->allTranslationsFor('es')->short()['translation-test::test'])
+        ->toEqual(['hello' => 'Hola!']);
+});
 
 // it('can add a nested translation', function () {
 //     $this->translation->addShortKeyTranslation('es', 'test', 'test.nested', 'Nested!');

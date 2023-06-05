@@ -44,10 +44,14 @@ trait InteractsWithShortKeys
     /**
      * Add a short key translation.
      */
-    public function addShortKeyTranslation(string $language, string $group, string $key, string $value = ''): void
+    public function addShortKeyTranslation(string $language, string $group, string $key, string $value = '', string|null $vendor = null): void
     {
         if (! $this->languageExists($language)) {
             $this->addLanguage($language);
+        }
+
+        if($vendor) {
+            $group = "{$vendor}::{$group}";
         }
 
         $translations = $this->shortKeyTranslations($language);
