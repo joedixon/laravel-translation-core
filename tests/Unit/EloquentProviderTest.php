@@ -142,83 +142,79 @@ it('can add a vendor namespaced translation', function () {
         ->toEqual(['hello' => 'Hola!']);
 });
 
-// it('can add a nested translation', function () {
-//     $this->translation->addShortKeyTranslation('es', 'test', 'test.nested', 'Nested!');
+it('can add a nested translation', function () {
+    $this->translation->addShortKeyTranslation('es', 'test', 'test.nested.again', 'Nested!');
 
-//     expect($this->translation->allTranslationsFor('es')->short()['test'])
-//         ->toEqual(['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!', 'test.nested' => 'Nested!']);
-// });
+    expect($this->translation->allTranslationsFor('es')->short()['test'])
+        ->toEqual(['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!', 'test' => ['nested' => ['again' => 'Nested!']]]);
+});
 
-// it('can add nested vendor namespaced translations', function () {
-//     $this->translation->addShortKeyTranslation('es', 'translation-test::test', 'nested.hello', 'Hola!');
+it('can add nested vendor namespaced translations', function () {
+    $this->translation->addShortKeyTranslation('es', 'translation-test::test', 'nested.hello', 'Hola!');
 
-//     expect($this->translation->allTranslationsFor('es')->short()['translation-test::test'])
-//         ->toEqual([
-//             'nested.hello' => 'Hola!',
-//         ]);
-// });
+    expect($this->translation->allTranslationsFor('es')->short()['translation-test::test'])
+        ->toEqual(['nested' => ['hello' => 'Hola!']]);
+});
 
-// it('can return a full list of available keys across all languages', function () {
-//     expect($this->translation->keys())
-//         ->toEqual(Translations::make(
-//             collect([
-//                 'Hello' => '',
-//                 "What's up" => '',
-//                 'laravel-translation' => ['key' => ''],
-//             ]),
-//             collect([
-//                 'errors' => [],
-//                 'validation' => [
-//                     'filled' => '',
-//                     'gt' => [
-//                         'array' => '',
-//                         'file' => '',
-//                         'numeric' => '',
-//                         'string' => '',
-//                     ],
-//                     'before_or_equal' => '',
-//                     'between' => [
-//                         'array' => '',
-//                         'file' => '',
-//                         'numeric' => '',
-//                         'string' => '',
-//                     ],
-//                 ],
-//                 'empty' => [],
-//                 'home' => [
-//                     'title' => '',
-//                 ],
-//                 'products' => [
-//                     'products' => [
-//                         'product_one' => [
-//                             'title' => '',
-//                             'description' => '',
-//                         ],
-//                     ],
-//                     'title' => '',
-//                 ],
-//                 'laravel-translation::laravel-translation' => [
-//                     'key' => '',
-//                 ],
-//                 'laravel-translation::validation' => [],
-//                 'test' => [
-//                     'hello' => '',
-//                     'whats_up' => '',
-//                 ],
-//             ])
-//         ));
-// });
+it('can return a full list of available keys across all languages', function () {
+    // dd($this->translation->keys());
+    expect($this->translation->keys())
+        ->toEqual(Translations::make(
+            collect([
+                'Hello' => '',
+                "What's up" => '',
+                'laravel-translation' => ['key' => ''],
+            ]),
+            collect([
+                'validation' => [
+                    'filled' => '',
+                    'gt' => [
+                        'array' => '',
+                        'file' => '',
+                        'numeric' => '',
+                        'string' => '',
+                    ],
+                    'before_or_equal' => '',
+                    'between' => [
+                        'array' => '',
+                        'file' => '',
+                        'numeric' => '',
+                        'string' => '',
+                    ],
+                ],
+                'home' => [
+                    'title' => '',
+                ],
+                'products' => [
+                    'products' => [
+                        'product_one' => [
+                            'title' => '',
+                            'description' => '',
+                        ],
+                    ],
+                    'title' => '',
+                ],
+                'laravel-translation::laravel-translation' => [
+                    'key' => '',
+                ],
+                'test' => [
+                    'hello' => '',
+                    'whats_up' => '',
+                ],
+            ])
+        ));
+});
 
-// it('can save a string key translation in an empty file if it exists', function () {
-//     $this->translation->addStringKeyTranslation('jp', 'Hello', 'こんにちは');
+it('can save a string key translation in an empty file if it exists', function () {
+    $this->translation->addStringKeyTranslation('jp', 'Hello', 'こんにちは');
 
-//     expect($this->translation->allTranslationsFor('jp')->string()->toArray())
-//         ->toEqual(['Hello' => 'こんにちは']);
-// });
+    expect($this->translation->allTranslationsFor('jp')->string()->toArray())
+        ->toEqual(['Hello' => 'こんにちは']);
+});
 
-// it('can add a string key translation to an existing file', function () {
-//     $this->translation->addStringKeyTranslation('en', 'Hey', 'Hey there!');
+it('can add a string key translation to an existing file', function () {
+    $this->translation->addStringKeyTranslation('en', 'Hey', 'Hey there!');
 
-//     expect($this->translation->allTranslationsFor('en')->string()->toArray())
-//         ->toEqual(['Hello' => 'Hello', "What's up" => "What's up!", 'Hey' => 'Hey there!', 'laravel-translation' => ['key' => 'value']]);
-// });
+    expect($this->translation->allTranslationsFor('en')->string()->toArray())
+        ->toEqual(['Hello' => 'Hello', "What's up" => "What's up!", 'Hey' => 'Hey there!', 'laravel-translation' => ['key' => 'value']]);
+});

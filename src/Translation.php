@@ -41,7 +41,7 @@ abstract class Translation
     /**
      * Add a short key translation.
      */
-    abstract public function addShortKeyTranslation(string $language, string $group, string $key, string $value = ''): void;
+    abstract public function addShortKeyTranslation(string $language, string $group, string $key, string $value = '', string|null $vendor = null): void;
 
     /**
      * Get string key translations for a given language.

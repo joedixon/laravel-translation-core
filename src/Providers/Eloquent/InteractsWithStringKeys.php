@@ -18,16 +18,16 @@ trait InteractsWithStringKeys
             ->groupBy('vendor');
 
         return $translations->mapWithKeys(function ($translations, $vendor) {
-            // Root translations are stored with a blank vendor
+            // Root translations are stored with a blank vendor.
             if($vendor === '') {
                 return $translations->mapWithKeys(function ($translation) {
                     return [$translation->key => $translation->value];
-                });
+                })->all();
             }
 
             return [$vendor => $translations->mapWithKeys(function ($translation) {
                 return [$translation->key => $translation->value];
-            })];
+            })->all()];
         });
     }
 

@@ -2,6 +2,7 @@
 
 namespace JoeDixon\TranslationCore\Providers\File;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -61,8 +62,11 @@ trait InteractsWithShortKeys
             $translations->put($group, collect());
         }
 
+        $keys = explode('.',$key);
+        $key = array_shift($keys);
+
         $values = $translations->get($group);
-        $values[$key] = $value;
+        $values[$key] = Arr::undot([implode('.', $keys) => $value]);
         $translations->put($group, collect($values));
 
         $this->saveShortKeyTranslations($language, $group, collect($translations->get($group)));

@@ -139,19 +139,17 @@ it('can add a vendor namespaced translation', function () {
 });
 
 it('can add a nested translation', function () {
-    $this->translation->addShortKeyTranslation('es', 'test', 'test.nested', 'Nested!');
+    $this->translation->addShortKeyTranslation('es', 'test', 'test.nested.again', 'Nested!');
 
     expect($this->translation->allTranslationsFor('es')->short()['test'])
-        ->toEqual(['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!', 'test.nested' => 'Nested!']);
+        ->toEqual(['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!', 'test' => ['nested' => ['again' => 'Nested!']]]);
 });
 
 it('can add nested vendor namespaced translations', function () {
     $this->translation->addShortKeyTranslation('es', 'translation-test::test', 'nested.hello', 'Hola!');
 
     expect($this->translation->allTranslationsFor('es')->short()['translation-test::test'])
-        ->toEqual([
-            'nested.hello' => 'Hola!',
-        ]);
+        ->toEqual(['nested' => ['hello' => 'Hola!']]);
 });
 
 it('can return a full list of available keys across all languages', function () {
