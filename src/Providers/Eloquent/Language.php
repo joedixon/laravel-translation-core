@@ -5,13 +5,12 @@ namespace JoeDixon\TranslationCore\Providers\Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Lang;
 use JoeDixon\TranslationCore\Providers\Eloquent\Factories\LanguageFactory;
 
 class Language extends Model
 {
     use HasFactory;
-    
+
     protected $guarded = [];
 
     public function __construct(array $attributes = [])

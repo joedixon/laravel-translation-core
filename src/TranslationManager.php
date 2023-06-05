@@ -4,8 +4,8 @@ namespace JoeDixon\TranslationCore;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Manager;
-use JoeDixon\TranslationCore\Providers\File\File;
 use JoeDixon\TranslationCore\Providers\Eloquent\Eloquent;
+use JoeDixon\TranslationCore\Providers\File\File;
 
 class TranslationManager extends Manager
 {

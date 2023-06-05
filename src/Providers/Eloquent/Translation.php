@@ -10,7 +10,7 @@ use JoeDixon\TranslationCore\Providers\Eloquent\Factories\TranslationFactory;
 class Translation extends Model
 {
     use HasFactory;
-    
+
     protected $guarded = [];
 
     public function __construct(array $attributes = [])

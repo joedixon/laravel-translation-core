@@ -3,12 +3,9 @@
 namespace JoeDixon\Translation\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use JoeDixon\TranslationCore\Exceptions\LanguageExistsException;
-use JoeDixon\TranslationCore\Providers\Eloquent\Language;
-use JoeDixon\TranslationCore\Providers\Eloquent\Translation as EloquentTranslation;
 use JoeDixon\TranslationCore\Translation;
 use JoeDixon\TranslationCore\Translations;
 use Tests\Cases\EloquentProviderTestCase;
@@ -28,13 +25,13 @@ afterEach(function () {
 });
 
 // it('can build a map of translation files', function () {
-    // expect($this->translation->map()->last())
-    //     ->toEqual('vendor/laravel-translation/en/validation.php');
+// expect($this->translation->map()->last())
+//     ->toEqual('vendor/laravel-translation/en/validation.php');
 // });
 
 // it('can find a translation file from the translation file map', function () {
-    // expect($this->translation->map('en'))
-    //     ->toEqual('en.json');
+// expect($this->translation->map('en'))
+//     ->toEqual('en.json');
 // });
 
 it('returns all languages', function () {

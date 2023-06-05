@@ -51,7 +51,7 @@ trait InteractsWithShortKeys
             $this->addLanguage($language);
         }
 
-        if($vendor) {
+        if ($vendor) {
             $group = "{$vendor}::{$group}";
         }
 
@@ -62,7 +62,7 @@ trait InteractsWithShortKeys
             $translations->put($group, collect());
         }
 
-        $keys = explode('.',$key);
+        $keys = explode('.', $key);
         $key = array_shift($keys);
 
         $values = $translations->get($group);

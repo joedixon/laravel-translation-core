@@ -70,7 +70,7 @@ class Eloquent extends Translation
         return collect();
     }
 
-    function map(string|null $key = null, string|null $default = null): Collection|string|null
+    public function map(string|null $key = null, string|null $default = null): Collection|string|null
     {
         return collect();
     }

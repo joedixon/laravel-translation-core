@@ -19,7 +19,7 @@ trait InteractsWithStringKeys
 
         return $translations->mapWithKeys(function ($translations, $vendor) {
             // Root translations are stored with a blank vendor.
-            if($vendor === '') {
+            if ($vendor === '') {
                 return $translations->mapWithKeys(function ($translation) {
                     return [$translation->key => $translation->value];
                 })->all();
