@@ -66,7 +66,7 @@ trait InteractsWithShortKeys
         $key = array_shift($keys);
 
         $values = $translations->get($group);
-        $values[$key] = Arr::undot([implode('.', $keys) => $value]);
+        $values[$key] = empty($keys) ? $value : Arr::undot([implode('.', $keys) => $value]);
         $translations->put($group, collect($values));
 
         $this->saveShortKeyTranslations($language, $group, collect($translations->get($group)));
