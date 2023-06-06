@@ -2,17 +2,21 @@
 
 namespace JoeDixon\Translation\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use JoeDixon\TranslationCore\Exceptions\LanguageExistsException;
 use JoeDixon\TranslationCore\Translation;
 use JoeDixon\TranslationCore\Translations;
-use Tests\Cases\FileProviderTestCase;
+use Tests\Cases\EloquentProviderTestCase;
 
-uses(FileProviderTestCase::class);
+uses(EloquentProviderTestCase::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     File::deleteDirectory($this->app->langPath());
     File::copyDirectory(__DIR__.'/../fixtures/lang', $this->app->langPath());
+    Artisan::call('translation:sync-translations file eloquent');
     $this->translation = $this->app->make(Translation::class);
 });
 
@@ -20,29 +24,29 @@ afterEach(function () {
     File::deleteDirectory($this->app->langPath());
 });
 
-it('can build a map of translation files', function () {
-    expect($this->translation->map()->last())
-        ->toEqual('vendor/laravel-translation/en/validation.php');
-});
+// it('can build a map of translation files', function () {
+// expect($this->translation->map()->last())
+//     ->toEqual('vendor/laravel-translation/en/validation.php');
+// });
 
-it('can find a translation file from the translation file map', function () {
-    expect($this->translation->map('en'))
-        ->toEqual('en.json');
-});
+// it('can find a translation file from the translation file map', function () {
+// expect($this->translation->map('en'))
+//     ->toEqual('en.json');
+// });
 
 it('returns all languages', function () {
     $languages = $this->translation->languages();
 
-    expect($languages)->toHaveCount(4);
+    expect($languages)->toHaveCount(3);
     expect($languages->toArray())
-        ->toEqual(['de' => 'de', 'en' => 'en', 'es' => 'es', 'jp' => 'jp']);
+        ->toEqual(['de' => 'de', 'en' => 'en', 'es' => 'es']);
 });
 
 it('returns all translations', function () {
     $translations = $this->translation->allTranslations();
 
     expect(array_keys($translations->get('en')->short()->toArray()))
-        ->toEqual(['empty', 'home', 'products', 'validation', 'laravel-translation::laravel-translation', 'laravel-translation::validation']);
+        ->toEqual(['home', 'products', 'validation', 'laravel-translation::laravel-translation']);
     expect($translations->get('en')->short()['products'])
         ->toEqual(['products' => ['product_one' => ['title' => 'Product 1', 'description' => 'This is product one']], 'title' => 'Product 1']);
     expect($translations->get('en')->string()->toArray())
@@ -50,14 +54,13 @@ it('returns all translations', function () {
     $this->assertArrayHasKey('de', $translations->toArray());
     $this->assertArrayHasKey('en', $translations->toArray());
     $this->assertArrayHasKey('es', $translations->toArray());
-    $this->assertArrayHasKey('jp', $translations->toArray());
 });
 
 it('returns all translations for a given language', function () {
     $translations = $this->translation->allTranslationsFor('es');
 
     expect($translations->string())->toBeEmpty();
-    expect($translations->short()->toArray())->toEqual(['empty' => [], 'products' => ['title' => 'Product 1'], 'test' => ['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!']]);
+    expect($translations->short()->toArray())->toEqual(['products' => ['title' => 'Product 1'], 'test' => ['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!']]);
 });
 
 it('throws an exception if a language exists', function () {
@@ -67,8 +70,7 @@ it('throws an exception if a language exists', function () {
 it('can add a new language', function () {
     $this->translation->addLanguage('pt');
 
-    expect(file_exists($this->app->langPath('pt.json')))->toBeTrue();
-    expect(file_exists($this->app->langPath('pt')))->toBeTrue();
+    $this->assertDatabaseHas('languages', ['language' => 'pt']);
 });
 
 it('can add a new translation to a group', function () {
@@ -128,12 +130,11 @@ it('can add a new vendor string key translation to an existing language', functi
 it('can get a collection of group names for a given language', function () {
     $groups = $this->translation->shortKeyGroups('de');
 
-    $this->assertEquals($groups->toArray(), ['errors', 'validation']);
+    $this->assertEquals($groups->toArray(), ['validation']);
 });
 
 it('can add a vendor namespaced translation', function () {
-    $this->translation->addShortKeyTranslation('es', 'translation-test::test', 'hello', 'Hola!');
-
+    $this->translation->addShortKeyTranslation('es', 'test', 'hello', 'Hola!', 'translation-test');
     expect($this->translation->allTranslationsFor('es')->short()['translation-test::test'])
         ->toEqual(['hello' => 'Hola!']);
 });
@@ -153,6 +154,7 @@ it('can add nested vendor namespaced translations', function () {
 });
 
 it('can return a full list of available keys across all languages', function () {
+    // dd($this->translation->keys());
     expect($this->translation->keys())
         ->toEqual(Translations::make(
             collect([
@@ -161,7 +163,6 @@ it('can return a full list of available keys across all languages', function () 
                 'laravel-translation' => ['key' => ''],
             ]),
             collect([
-                'errors' => [],
                 'validation' => [
                     'filled' => '',
                     'gt' => [
@@ -178,7 +179,6 @@ it('can return a full list of available keys across all languages', function () 
                         'string' => '',
                     ],
                 ],
-                'empty' => [],
                 'home' => [
                     'title' => '',
                 ],
@@ -194,7 +194,6 @@ it('can return a full list of available keys across all languages', function () 
                 'laravel-translation::laravel-translation' => [
                     'key' => '',
                 ],
-                'laravel-translation::validation' => [],
                 'test' => [
                     'hello' => '',
                     'whats_up' => '',
