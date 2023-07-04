@@ -3,6 +3,8 @@
 namespace JoeDixon\TranslationCore;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Event;
+use JoeDixon\TranslationCore\Events\TranslationAdded;
 
 abstract class Translation
 {
@@ -90,5 +92,19 @@ abstract class Translation
 
             return $carry;
         }, Translations::make())->reset();
+    }
+
+    /**
+     * Automatically add a new string or short key translation for the given language.
+     */
+    public function add(string $language, string $key, string $value = '', string|null $group = null, string|null $vendor = null): void
+    {
+        if ($group !== null) {
+            $this->addShortKeyTranslation($language, $group, $key, $value, $vendor);
+        } else {
+            $this->addStringKeyTranslation($language, $key, $value, $vendor);
+        }
+
+        Event::dispatch(new TranslationAdded($language, $group, $key, $value));
     }
 }

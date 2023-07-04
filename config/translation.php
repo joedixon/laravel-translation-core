@@ -8,7 +8,7 @@ return [
     |
     | The package supports different drivers for translation management.
     |
-    | Supported: "file", "database"
+    | Supported: "file", "eloquent"
     |
     */
     'driver' => 'file',

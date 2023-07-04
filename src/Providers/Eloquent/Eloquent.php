@@ -53,7 +53,7 @@ class Eloquent extends Translation
      */
     private function getLanguage(string $language): Language
     {
-        return Language::where('language', $language)->firstOrFail();
+        return Language::where('language', $language)->first() ?: new Language();
     }
 
     private function getOrCreateLanguage(string $language): Language
