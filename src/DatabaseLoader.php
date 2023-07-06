@@ -3,7 +3,6 @@
 namespace JoeDixon\TranslationCore;
 
 use Illuminate\Contracts\Translation\Loader;
-use JoeDixon\TranslationCore\TranslationManager;
 
 class DatabaseLoader implements Loader
 {

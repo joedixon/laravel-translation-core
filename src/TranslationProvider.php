@@ -2,10 +2,10 @@
 
 namespace JoeDixon\TranslationCore;
 
+use Illuminate\Console\Application as Artisan;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
-use Illuminate\Console\Application as Artisan;
 use Illuminate\Translation\Translator;
 use JoeDixon\TranslationCore\Console\Commands\SynchroniseTranslations;
 

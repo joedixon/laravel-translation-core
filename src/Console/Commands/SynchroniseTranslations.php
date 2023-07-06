@@ -57,7 +57,7 @@ class SynchroniseTranslations extends Command
     }
 
     /**
-     * @param  Collection<string, array> $groups
+     * @param  Collection<string, array>  $groups
      */
     private function mergeShortKeyTranslations(string $language, Collection $groups): void
     {
@@ -79,14 +79,14 @@ class SynchroniseTranslations extends Command
      */
     private function mergeStringKeyTranslations(string $language, Collection $translations, string|null $vendor = null): void
     {
-            foreach ($translations as $key => $value) {
-                if (is_array($value)) {
-                    $this->mergeStringKeyTranslations($language, collect($value), $key);
+        foreach ($translations as $key => $value) {
+            if (is_array($value)) {
+                $this->mergeStringKeyTranslations($language, collect($value), $key);
 
-                    return;
-                }
-
-                $this->to->addStringKeyTranslation($language, $key, $value, $vendor);
+                return;
             }
+
+            $this->to->addStringKeyTranslation($language, $key, $value, $vendor);
+        }
     }
 }
