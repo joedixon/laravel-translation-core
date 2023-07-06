@@ -38,12 +38,5 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "JoeDixon\\TranslationCore\\TranslationServiceProvider"
-            ]
-        }
     }
 }

@@ -11,8 +11,10 @@ class CreateLanguagesTable extends Migration
      */
     public function up(): void
     {
-        Schema::connection(config('translation.database.connection'))
-            ->create(config('translation.database.languages_table'), function (Blueprint $table) {
+        $config = app('translation.config');
+
+        Schema::connection($config->database['connection'])
+            ->create($config->database['languages_table'], function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('name')->nullable();
                 $table->string('language');
@@ -25,7 +27,9 @@ class CreateLanguagesTable extends Migration
      */
     public function down(): void
     {
-        Schema::connection(config('translation.database.connection'))
-            ->dropIfExists(config('translation.database.languages_table'));
+        $config = app('translation.config');
+
+        Schema::connection($config->database['connection'])
+            ->dropIfExists($config->database['languages_table']);
     }
 }

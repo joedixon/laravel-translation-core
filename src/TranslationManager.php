@@ -11,7 +11,7 @@ class TranslationManager extends Manager
 {
     public function getDefaultDriver()
     {
-        return $this->config['translation.driver'] ?? 'file';
+        return app('translation.config')->driver;
     }
 
     protected function createFileDriver(): File

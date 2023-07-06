@@ -24,16 +24,6 @@ afterEach(function () {
     File::deleteDirectory($this->app->langPath());
 });
 
-// it('can build a map of translation files', function () {
-// expect($this->translation->map()->last())
-//     ->toEqual('vendor/laravel-translation/en/validation.php');
-// });
-
-// it('can find a translation file from the translation file map', function () {
-// expect($this->translation->map('en'))
-//     ->toEqual('en.json');
-// });
-
 it('returns all languages', function () {
     $languages = $this->translation->languages();
 

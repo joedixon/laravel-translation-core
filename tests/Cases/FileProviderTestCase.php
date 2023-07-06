@@ -2,16 +2,23 @@
 
 namespace Tests\Cases;
 
+use JoeDixon\TranslationCore\Configuration;
+use JoeDixon\TranslationCore\TranslationProvider;
 use JoeDixon\TranslationCore\TranslationServiceProvider;
 use Orchestra\Testbench\TestCase;
 
 class FileProviderTestCase extends TestCase
 {
-    protected function getPackageProviders($app)
+    /**
+     * Setup the test environment.
+     */
+    protected function setUp(): void
     {
-        return [
-            TranslationServiceProvider::class,
-        ];
+        parent::setUp();
+        TranslationProvider::init(
+            $this->app,
+            new Configuration
+        );
     }
 
     protected function defineEnvironment($app)

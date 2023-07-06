@@ -12,7 +12,7 @@ class SynchroniseTranslations extends Command
 {
     protected $signature = 'translation:sync-translations {from} {to} {language=all}';
 
-    protected $description = 'Synchronise translations between drivers';
+    protected $description = 'Synchronize translations between drivers';
 
     protected $to;
 

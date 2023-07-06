@@ -11,12 +11,14 @@ class CreateTranslationsTable extends Migration
      */
     public function up(): void
     {
-        Schema::connection(config('translation.database.connection'))
-            ->create(config('translation.database.translations_table'), function (Blueprint $table) {
+        $config = app('translation.config');
+
+        Schema::connection($config->database['connection'])
+            ->create($config->database['translations_table'], function (Blueprint $table) use ($config) {
                 $table->increments('id');
                 $table->unsignedInteger('language_id');
                 $table->foreign('language_id')->references('id')
-                    ->on(config('translation.database.languages_table'));
+                    ->on($config->database['languages_table']);
                 $table->string('group')->nullable();
                 $table->text('key');
                 $table->text('value')->nullable();
@@ -29,7 +31,9 @@ class CreateTranslationsTable extends Migration
      */
     public function down(): void
     {
-        Schema::connection(config('translation.database.connection'))
-            ->dropIfExists(config('translation.database.translations_table'));
+        $config = app('translation.config');
+
+        Schema::connection($config->database['connection'])
+            ->dropIfExists($config->database['translations_table']);
     }
 }

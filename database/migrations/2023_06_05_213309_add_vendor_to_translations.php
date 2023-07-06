@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::connection(config('translation.database.connection'))
-            ->table(config('translation.database.translations_table'), function (Blueprint $table) {
+        $config = app('translation.config');
+
+        Schema::connection($config->database['connection'])
+            ->table($config->database['translations_table'], function (Blueprint $table) {
                 $table->string('vendor')
                     ->after('language_id')
                     ->nullable();
@@ -24,8 +26,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::connection(config('translation.database.connection'))
-            ->table(config('translation.database.translations_table'), function (Blueprint $table) {
+        $config = app('translation.config');
+
+        Schema::connection($config->database['connection'])
+            ->table($config->database['translations_table'], function (Blueprint $table) {
                 $table->dropColumn('vendor');
             });
     }
