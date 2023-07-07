@@ -93,13 +93,11 @@ class TranslationProvider
     {
         $this->registerDatabaseLoader();
 
-        $this->app->singleton('translator', function ($app) {
-            $loader = $app['translation.loader'];
-            // When registering the translator component, we'll need to set the default
-            // locale as well as the fallback locale. So, we'll grab the application
-            // configuration so we can easily get both of these values from there.
-            $locale = $app['config']['app.locale'];
-            $translator = new Translator($loader, $locale);
+        $this->app->extend('translator', function ($translator, $app) {
+            $translator = new Translator(
+                $app->make('translation.loader'),
+                $app['config']['app.locale']
+            );
             $translator->setFallback($app['config']['app.fallback_locale']);
 
             return $translator;
@@ -108,8 +106,10 @@ class TranslationProvider
 
     protected function registerDatabaseLoader()
     {
-        $this->app->singleton('translation.loader', function ($app) {
-            return new DatabaseLoader($this->app->make(TranslationManager::class));
+        $this->app->extend('translation.loader', function ($loader, $app) {
+            return new DatabaseLoader(
+                $app->make(TranslationManager::class)
+            );
         });
     }
 }

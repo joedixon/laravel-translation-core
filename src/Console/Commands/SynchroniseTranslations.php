@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use JoeDixon\TranslationCore\TranslationManager;
 use JoeDixon\TranslationCore\Translations;
+use Illuminate\Support\Str;
 
 class SynchroniseTranslations extends Command
 {
@@ -62,13 +63,21 @@ class SynchroniseTranslations extends Command
     private function mergeShortKeyTranslations(string $language, Collection $groups): void
     {
         $groups->each(function ($translations, $group) use ($language) {
-            collect($translations)->each(function ($value, $key) use ($language, $group) {
+            $vendor = null;
+
+            if(Str::contains($group, '::')) {
+                $vendor = Str::before($group, '::');
+                $group = Str::after($group, '::');
+            }
+            
+            collect($translations)->each(function ($value, $key) use ($language, $group, $vendor) {
                 if (is_array($value)) {
                     foreach (Arr::dot($value) as $subKey => $subValue) {
-                        $this->to->addShortKeyTranslation($language, $group, $key.'.'.$subKey, $subValue);
+                        
+                        $this->to->addShortKeyTranslation($language, $group, $key.'.'.$subKey, $subValue, $vendor);
                     }
                 } else {
-                    $this->to->addShortKeyTranslation($language, $group, $key, $value);
+                    $this->to->addShortKeyTranslation($language, $group, $key, $value, $vendor);
                 }
             });
         });
