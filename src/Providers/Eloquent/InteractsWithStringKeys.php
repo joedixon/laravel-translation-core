@@ -41,6 +41,7 @@ trait InteractsWithStringKeys
             ->updateOrCreate([
                 'vendor' => $vendor,
                 'key' => $key,
+                'group' => null,
             ], [
                 'key' => $key,
                 'value' => $value,
