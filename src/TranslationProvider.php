@@ -18,7 +18,7 @@ class TranslationProvider
         //
     }
 
-    public static function init(Application $application, Configuration $config): static
+    public static function init(Application $application, Configuration $config): self
     {
         return (new static($application, $config))
             ->registerContainerBindings()
@@ -45,7 +45,7 @@ class TranslationProvider
         $this->app->afterResolving('migrator', $callback);
 
         if ($this->app->resolved('migrator')) {
-            $callback($this->app->make('migrator'), $this->app);
+            $callback($this->app->make('migrator'));
         }
     }
 
