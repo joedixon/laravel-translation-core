@@ -2,16 +2,17 @@
 
 namespace JoeDixon\TranslationCore\Console\Commands;
 
-use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use JoeDixon\TranslationCore\TranslationManager;
 use JoeDixon\TranslationCore\Translations;
 
-class SynchroniseTranslations extends Command
+class SynchronizeTranslations extends Command
 {
-    protected $signature = 'translation:sync-translations {from} {to} {language=all}';
+    protected $signature = 'translation:sync-translations 
+                            {from : The driver to sync from}
+                            {to : The driver to sync to}
+                            {language=all : The language to sync}';
 
     protected $description = 'Synchronize translations between drivers';
 
@@ -23,10 +24,10 @@ class SynchroniseTranslations extends Command
     public function handle(): void
     {
         $language = $this->argument('language');
-        $from = app()->make(TranslationManager::class)->driver(
+        $from = $this->translation->driver(
             $this->argument('from')
         );
-        $this->to = app()->make(TranslationManager::class)->driver(
+        $this->to = $this->translation->driver(
             $this->argument('to')
         );
 

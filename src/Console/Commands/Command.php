@@ -3,11 +3,11 @@
 namespace JoeDixon\TranslationCore\Console\Commands;
 
 use Illuminate\Console\Command as BaseCommand;
-use JoeDixon\TranslationCore\Providers\Eloquent\Translation;
+use JoeDixon\TranslationCore\TranslationManager;
 
 class Command extends BaseCommand
 {
-    public function __construct(protected Translation $translation)
+    public function __construct(protected TranslationManager $translation)
     {
         parent::__construct();
     }

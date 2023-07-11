@@ -7,7 +7,8 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Translation\Translator;
-use JoeDixon\TranslationCore\Console\Commands\SynchroniseTranslations;
+use JoeDixon\TranslationCore\Console\Commands\AddLanguage;
+use JoeDixon\TranslationCore\Console\Commands\SynchronizeTranslations;
 
 class TranslationProvider
 {
@@ -90,7 +91,8 @@ class TranslationProvider
         if ($this->app->runningInConsole()) {
             Artisan::starting(function ($artisan) {
                 $artisan->resolveCommands([
-                    SynchroniseTranslations::class,
+                    AddLanguage::class,
+                    SynchronizeTranslations::class,
                 ]);
             });
         }
