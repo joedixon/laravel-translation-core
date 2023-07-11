@@ -20,7 +20,10 @@ class FileProviderTestCase extends TestCase
         );
     }
 
-    protected function defineEnvironment($app)
+    /**
+     * Define the test environment.
+     */
+    protected function defineEnvironment($app): void
     {
         $app->useLangPath(__DIR__.'/../lang');
     }

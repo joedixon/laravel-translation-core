@@ -14,6 +14,9 @@ class TranslationManager extends Manager
         return app('translation.config')->driver;
     }
 
+    /**
+     * Create an instance of the file driver.
+     */
     protected function createFileDriver(): File
     {
         return new File(
@@ -23,6 +26,9 @@ class TranslationManager extends Manager
         );
     }
 
+    /**
+     * Create an instance of the Eloquent driver.
+     */
     protected function createEloquentDriver(): Eloquent
     {
         return new Eloquent($this->config['app.locale']);

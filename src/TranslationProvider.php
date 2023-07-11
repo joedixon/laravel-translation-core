@@ -18,6 +18,9 @@ class TranslationProvider
         //
     }
 
+    /**
+     * Initialise the package.
+     */
     public static function init(Application $application, Configuration $config): self
     {
         return (new static($application, $config))
@@ -26,6 +29,9 @@ class TranslationProvider
             ->configureDriver($config->driver);
     }
 
+    /**
+     * Configure the translation driver.
+     */
     protected function configureDriver(string $driver): self
     {
         if ($driver === 'eloquent') {
@@ -36,7 +42,10 @@ class TranslationProvider
         return $this;
     }
 
-    public function loadMigrations()
+    /**
+     * Load the package migrations.
+     */
+    public function loadMigrations(): void
     {
         $callback = function ($migrator) {
             $migrator->path(__DIR__.'/../database/migrations');
@@ -52,7 +61,7 @@ class TranslationProvider
     /**
      * Register package bindings in the container.
      */
-    private function registerContainerBindings(): self
+    protected function registerContainerBindings(): self
     {
         $this->app->singleton(Scanner::class, function () {
             return new Scanner(
@@ -76,7 +85,7 @@ class TranslationProvider
     /**
      * Register package commands.
      */
-    private function registerCommands(): self
+    protected function registerCommands(): self
     {
         if ($this->app->runningInConsole()) {
             Artisan::starting(function ($artisan) {
@@ -89,7 +98,10 @@ class TranslationProvider
         return $this;
     }
 
-    private function registerDatabaseTranslator()
+    /**
+     * Register the database translator.
+     */
+    protected function registerDatabaseTranslator(): void
     {
         $this->registerDatabaseLoader();
 
@@ -104,7 +116,10 @@ class TranslationProvider
         });
     }
 
-    protected function registerDatabaseLoader()
+    /**
+     * Register the database loader.
+     */
+    protected function registerDatabaseLoader(): void
     {
         $this->app->extend('translation.loader', function ($loader, $app) {
             return new DatabaseLoader(

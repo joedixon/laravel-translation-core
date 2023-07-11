@@ -41,9 +41,9 @@ it('returns all translations', function () {
         ->toEqual(['products' => ['product_one' => ['title' => 'Product 1', 'description' => 'This is product one']], 'title' => 'Product 1']);
     expect($translations->get('en')->string()->toArray())
         ->toEqual(['Hello' => 'Hello', "What's up" => "What's up!", 'laravel-translation' => ['key' => 'value']]);
-    $this->assertArrayHasKey('de', $translations->toArray());
-    $this->assertArrayHasKey('en', $translations->toArray());
-    $this->assertArrayHasKey('es', $translations->toArray());
+    expect($translations->toArray())->toHaveKey('de');
+    expect($translations->toArray())->toHaveKey('en');
+    expect($translations->toArray())->toHaveKey('es');
 });
 
 it('returns all translations for a given language', function () {
@@ -120,7 +120,7 @@ it('can add a new vendor string key translation to an existing language', functi
 it('can get a collection of group names for a given language', function () {
     $groups = $this->translation->shortKeyGroups('de');
 
-    $this->assertEquals($groups->toArray(), ['validation']);
+    expect($groups->toArray())->toEqual(['validation']);
 });
 
 it('can add a vendor namespaced translation', function () {
@@ -144,7 +144,6 @@ it('can add nested vendor namespaced translations', function () {
 });
 
 it('can return a full list of available keys across all languages', function () {
-    // dd($this->translation->keys());
     expect($this->translation->keys())
         ->toEqual(Translations::make(
             collect([
