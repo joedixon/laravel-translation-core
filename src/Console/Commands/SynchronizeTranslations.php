@@ -31,15 +31,13 @@ class SynchronizeTranslations extends Command
             $this->argument('to')
         );
 
-        $this->line(__('translation::translation.syncing'));
-
         if ($language !== 'all') {
             $this->mergeTranslations($language, $from->allTranslationsFor($language));
         } else {
             $this->mergeLanguages($from->allTranslations());
         }
 
-        $this->info(__('translation::translation.synced'));
+        $this->components->info(__('translation::translation.synced'));
     }
 
     /**

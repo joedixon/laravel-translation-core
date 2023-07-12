@@ -22,7 +22,7 @@ class AddLanguage extends Command
 
         try {
             $this->translation->addLanguage($language, $name);
-            $this->info(__('translation::translation.language_added'));
+            $this->components->info(__('translation::translation.language_added'));
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
