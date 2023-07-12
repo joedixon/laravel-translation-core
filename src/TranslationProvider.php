@@ -8,6 +8,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Translation\Translator;
 use JoeDixon\TranslationCore\Console\Commands\AddLanguage;
+use JoeDixon\TranslationCore\Console\Commands\ShowLanguages;
 use JoeDixon\TranslationCore\Console\Commands\SynchronizeTranslations;
 
 class TranslationProvider
@@ -92,6 +93,7 @@ class TranslationProvider
             Artisan::starting(function ($artisan) {
                 $artisan->resolveCommands([
                     AddLanguage::class,
+                    ShowLanguages::class,
                     SynchronizeTranslations::class,
                 ]);
             });
