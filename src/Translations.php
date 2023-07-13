@@ -104,7 +104,7 @@ class Translations
                     ->diffKeys(
                         collect(Arr::dot($collectionTwo))
                     )
-                )
-            );
+            )
+        );
     }
 }

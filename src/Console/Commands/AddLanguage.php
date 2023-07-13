@@ -2,8 +2,6 @@
 
 namespace JoeDixon\TranslationCore\Console\Commands;
 
-use JoeDixon\TranslationCore\Console\Commands\Command;
-
 class AddLanguage extends Command
 {
     protected $signature = 'translation:add-language

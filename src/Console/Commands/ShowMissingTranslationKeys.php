@@ -4,9 +4,9 @@ namespace JoeDixon\TranslationCore\Console\Commands;
 
 use Illuminate\Support\Str;
 
-class ShowMissingTranslations extends Command
+class ShowMissingTranslationKeys extends Command
 {
-    protected $signature = 'translation:show-missing-translation
+    protected $signature = 'translation:show-missing-translation-keys
                             {language? : The language to show missing translations for}';
 
     protected $description = 'Show all of the translation keys which don\'t have a corresponding translation';
@@ -52,23 +52,23 @@ class ShowMissingTranslations extends Command
                     }
 
                     $this->components->twoColumnDetail(
-                        $key . ' <fg=gray>'.$language.'</>',
-                        '<fg=yellow;options=bold>short</> <fg=gray>/</> '. ($namespace ? $namespace.'<fg=gray>::</>' : '') . $group
+                        $key.' <fg=gray>'.$language.'</>',
+                        '<fg=yellow;options=bold>short</> <fg=gray>/</> '.($namespace ? $namespace.'<fg=gray>::</>' : '').$group
                     );
                 });
             });
 
             $translations->stringKeyTranslations->each(function ($translations, $namespace) use ($language) {
-                if(is_array($translations)) {
+                if (is_array($translations)) {
                     collect($translations)->each(function ($value, $key) use ($namespace, $language) {
                         $this->components->twoColumnDetail(
-                            $key . ' <fg=gray>'.$language.'</>',
+                            $key.' <fg=gray>'.$language.'</>',
                             '<fg=yellow;options=bold>string</> <fg=gray>/</> '.$namespace
                         );
                     });
                 } else {
                     $this->components->twoColumnDetail(
-                        $namespace . ' <fg=gray>'.$language.'</>',
+                        $namespace.' <fg=gray>'.$language.'</>',
                         '<fg=yellow;options=bold>string</> <fg=gray>/</> root'
                     );
                 }

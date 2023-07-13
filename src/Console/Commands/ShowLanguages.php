@@ -2,8 +2,6 @@
 
 namespace JoeDixon\TranslationCore\Console\Commands;
 
-use JoeDixon\TranslationCore\Console\Commands\Command;
-
 class ShowLanguages extends Command
 {
     protected $signature = 'translation:list-languages';
@@ -18,7 +16,7 @@ class ShowLanguages extends Command
     public function handle()
     {
         $this->components->twoColumnDetail(
-            '<fg=green;options=bold>'.__('translation::translation.language_name').'</>', 
+            '<fg=green;options=bold>'.__('translation::translation.language_name').'</>',
             __('translation::translation.language')
         );
 
