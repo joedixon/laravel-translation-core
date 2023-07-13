@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Translation\Translator;
 use JoeDixon\TranslationCore\Console\Commands\AddLanguage;
 use JoeDixon\TranslationCore\Console\Commands\ShowLanguages;
+use JoeDixon\TranslationCore\Console\Commands\ShowMissingTranslations;
 use JoeDixon\TranslationCore\Console\Commands\SynchronizeTranslations;
 
 class TranslationProvider
@@ -94,6 +95,7 @@ class TranslationProvider
                 $artisan->resolveCommands([
                     AddLanguage::class,
                     ShowLanguages::class,
+                    ShowMissingTranslations::class,
                     SynchronizeTranslations::class,
                 ]);
             });

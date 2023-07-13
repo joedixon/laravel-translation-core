@@ -2,6 +2,7 @@
 
 namespace JoeDixon\TranslationCore;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 class Translations
@@ -71,5 +72,39 @@ class Translations
 
             return '';
         });
+    }
+
+    /**
+     * Return the keys and values of the current translations which don't exist in the given translations.
+     */
+    public function diffKeys(Translations $translations): Translations
+    {
+        $stringKeyTranslations = $this->diffKeysRecursive($this->stringKeyTranslations, $translations->stringKeyTranslations);
+        $shortKeyTranslations = $this->diffKeysRecursive($this->shortKeyTranslations, $translations->shortKeyTranslations);
+
+        return new static($stringKeyTranslations, $shortKeyTranslations);
+    }
+
+    /**
+     * Determine if the translations are empty.
+     */
+    public function isEmpty(): bool
+    {
+        return $this->stringKeyTranslations->isEmpty() && $this->shortKeyTranslations->isEmpty();
+    }
+
+    /**
+     * Recusively diff the keys of two collections returning those which exist in the first, but not the second.
+     */
+    protected function diffKeysRecursive(Collection $collectionOne, Collection $collectionTwo): Collection
+    {
+        return collect(
+            Arr::undot(
+                collect(Arr::dot($collectionOne))
+                    ->diffKeys(
+                        collect(Arr::dot($collectionTwo))
+                    )
+                )
+            );
     }
 }

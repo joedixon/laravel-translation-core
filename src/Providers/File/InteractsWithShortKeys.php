@@ -57,7 +57,7 @@ trait InteractsWithShortKeys
 
         $translations = $this->shortKeyTranslations($language);
 
-        // does the group exist? If not, create it.
+        // Does the group exist? If not, create it.
         if (! $translations->keys()->contains($group)) {
             $translations->put($group, collect());
         }
