@@ -35,6 +35,16 @@ class Translations
     }
 
     /**
+     * Get the short key translations grouped with dot notation.
+     */
+    public function shortByGroup(): Collection
+    {
+        return $this->shortKeyTranslations->mapWithKeys(function ($group, $key) {
+            return [$key => Arr::dot($group)];
+        });
+    }
+
+    /**
      * Create a new instance of the class.
      */
     public static function make(?Collection $stringKeyTranslations = null, ?Collection $shortKeyTranslations = null): self
