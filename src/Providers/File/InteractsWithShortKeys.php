@@ -5,6 +5,7 @@ namespace JoeDixon\TranslationCore\Providers\File;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use SplFileInfo;
 
 trait InteractsWithShortKeys
 {
@@ -13,16 +14,19 @@ trait InteractsWithShortKeys
      */
     public function shortKeyTranslations(string $language): Collection
     {
-        return $this->shortKeyFiles($language)->mapWithKeys(function ($group) {
+        return $this->shortKeyFiles($language)->mapWithKeys(function ($group) use ($language) {
             if (Str::contains($group->getPathname(), 'vendor')) {
+                $translations = $this->disk->getRequire($group->getPathname());
                 $vendor = Str::before(Str::after($group->getPathname(), 'vendor'.DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
+                $group = $this->extractGroup($language, $group);
 
-                return ["{$vendor}::{$group->getBasename('.php')}" => $this->disk->getRequire($group->getPathname())];
+                return ["{$vendor}::{$group}" => $translations];
             }
 
             $translations = $this->disk->getRequire($group->getPathname());
+            $group = $this->extractGroup($language, $group);
 
-            return [$group->getBasename('.php') => is_array($translations) ? $translations : []];
+            return [$group => is_array($translations) ? $translations : []];
         });
     }
 
@@ -90,8 +94,6 @@ trait InteractsWithShortKeys
 
         $groups = collect($this->disk->allFiles($path));
 
-        // namespaced files reside in the vendor directory so we'll grab these
-        // the `vendorShortKeyFiles` method
         return $groups->merge($this->vendorShortKeyFiles($language))
             ->filter(function ($file) {
                 return Str::endsWith($file->getBasename(), '.php');
@@ -129,8 +131,16 @@ trait InteractsWithShortKeys
             return;
         }
 
+        $groups = explode('/', $group);
+        $group = array_pop($groups);
+        $directory = $this->path($language, ...$groups);
+
+        if (! $this->disk->exists($directory)) {
+            $this->disk->makeDirectory($directory, 0755, true);
+        }
+
         $this->disk->put(
-            $this->path($language, "{$group}.php"),
+            $this->path($directory, "{$group}.php"),
             "<?php\n\nreturn ".var_export($translations->toArray(), true).';'.\PHP_EOL
         );
     }
@@ -141,7 +151,9 @@ trait InteractsWithShortKeys
     protected function saveNamespacedShortKeyTranslations(string $language, string $group, Collection $translations): void
     {
         [$namespace, $group] = explode('::', $group);
-        $directory = $this->path('vendor', $namespace, $language);
+        $groups = explode('/', $group);
+        $group = array_pop($groups);
+        $directory = $this->path('vendor', $namespace, $language, ...$groups);
 
         if (! $this->disk->exists($directory)) {
             $this->disk->makeDirectory($directory, 0755, true);
@@ -151,5 +163,18 @@ trait InteractsWithShortKeys
             $this->path($directory, "{$group}.php"),
             "<?php\n\nreturn ".var_export($translations->toArray(), true).';'.\PHP_EOL
         );
+    }
+
+    /**
+     * 
+     * Extract the group from the file path.
+     */
+    protected function extractGroup(string $language, SplFileInfo $path): string
+    {
+        return Str::of($path->getPathname())
+            ->after(DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR)
+            ->replace('.'.$path->getExtension(), '')
+            ->replace(DIRECTORY_SEPARATOR, '/')
+            ->__toString();
     }
 }

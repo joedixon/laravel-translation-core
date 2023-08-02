@@ -42,7 +42,7 @@ it('returns all translations', function () {
     $translations = $this->translation->allTranslations();
 
     expect(array_keys($translations->get('en')->short()->toArray()))
-        ->toEqual(['empty', 'home', 'products', 'validation', 'laravel-translation::laravel-translation', 'laravel-translation::validation']);
+        ->toEqual(['empty', 'home', 'home/nav/items', 'products', 'validation', 'laravel-translation::laravel-translation', 'laravel-translation::validation']);
     expect($translations->get('en')->short()['products'])
         ->toEqual(['products' => ['product_one' => ['title' => 'Product 1', 'description' => 'This is product one']], 'title' => 'Product 1']);
     expect($translations->get('en')->string()->toArray())
@@ -87,6 +87,16 @@ it('can add a new translation to an existing translation group', function () {
 
     expect($translations->short()->toArray()['test'])
         ->toEqual(['hello' => 'Hola!', 'whats_up' => '¡Qué pasa!', 'test' => 'Pruebas']);
+});
+
+it('can add a new translation to a nested translation group', function () {
+    $this->translation->addShortKeyTranslation('es', 'test/test/test', 'test.test', 'Pruebas');
+
+    $translations = $this->translation->allTranslationsFor('es');
+
+    expect(File::exists($this->app->langPath('es/test/test/test.php')))->toBeTrue();
+    expect($translations->short()->toArray()['test/test/test'])
+        ->toEqual(['test' => ['test' => 'Pruebas']]);
 });
 
 it('can add a new string key translation', function () {
@@ -198,6 +208,10 @@ it('can return a full list of available keys across all languages', function () 
                 'test' => [
                     'hello' => '',
                     'whats_up' => '',
+                ],
+                'home/nav/items' => [
+                    'home' => '',
+                    'about' => '',
                 ],
             ])
         ));
