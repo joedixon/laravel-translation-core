@@ -4,6 +4,7 @@ namespace JoeDixon\TranslationCore;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class Translations
 {
@@ -47,7 +48,7 @@ class Translations
     /**
      * Create a new instance of the class.
      */
-    public static function make(?Collection $stringKeyTranslations = null, ?Collection $shortKeyTranslations = null): self
+    public static function make(Collection $stringKeyTranslations = null, Collection $shortKeyTranslations = null): self
     {
         return new static(
             $stringKeyTranslations ?? collect(),
@@ -96,6 +97,32 @@ class Translations
     }
 
     /**
+     * Merge the translations with the given translations.
+     */
+    public function merge(Translations $translations): Translations
+    {
+        $stringKeyTranslations = $this->mergeRecursive($this->stringKeyTranslations, $translations->stringKeyTranslations);
+        $shortKeyTranslations = $this->mergeRecursive($this->shortKeyTranslations, $translations->shortKeyTranslations);
+
+        return new static($stringKeyTranslations, $shortKeyTranslations);
+    }
+
+    /**
+     * Filter the translations by the given query.
+     */
+    public function search(?string $query): Translations
+    {
+        if (! $query) {
+            return $this;
+        }
+
+        $stringKeyTranslations = $this->searchRecursive($this->stringKeyTranslations, $query);
+        $shortKeyTranslations = $this->searchRecursive($this->shortKeyTranslations, $query);
+
+        return new static($stringKeyTranslations, $shortKeyTranslations);
+    }
+
+    /**
      * Determine if the translations are empty.
      */
     public function isEmpty(): bool
@@ -114,6 +141,34 @@ class Translations
                     ->diffKeys(
                         collect(Arr::dot($collectionTwo))
                     )
+            )
+        );
+    }
+
+    /**
+     * Recusively merge two collections.
+     */
+    protected function mergeRecursive(Collection $collectionOne, Collection $collectionTwo): Collection
+    {
+        return collect(
+            Arr::undot(
+                collect(Arr::dot($collectionOne))
+                    ->merge(
+                        collect(Arr::dot($collectionTwo))
+                    )
+            )
+        );
+    }
+
+    /**
+     * Recursively search the translations for the given query.
+     */
+    protected function searchRecursive(Collection $translations, string $query): Collection
+    {
+        return collect(
+            Arr::undot(
+                collect(Arr::dot($translations))
+                    ->filter(fn ($value, $key) => (is_string($key) && Str::contains($key, $query)) || (is_string($value) && Str::contains($value, $query)))
             )
         );
     }
