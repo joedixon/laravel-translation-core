@@ -230,3 +230,10 @@ it('can add a string key translation to an existing file', function () {
     expect($this->translation->allTranslationsFor('en')->string()->toArray())
         ->toEqual(['Hello' => 'Hello', "What's up" => "What's up!", 'Hey' => 'Hey there!', 'laravel-translation' => ['key' => 'value']]);
 });
+
+it('can get return translations for a language where translations only exist in vendor directory', function () {
+    $translations = $this->translation->allTranslationsFor('nl');
+
+    expect($translations->short()->toArray())
+        ->toEqual(['laravel-translation::test' => ['test' => 'Test']]);
+});

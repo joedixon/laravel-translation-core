@@ -89,10 +89,10 @@ trait InteractsWithShortKeys
         $path = $this->path($language);
 
         if (! $this->disk->exists($path)) {
-            return collect();
+            $groups = collect();
+        } else {
+            $groups = collect($this->disk->allFiles($path));
         }
-
-        $groups = collect($this->disk->allFiles($path));
 
         return $groups->merge($this->vendorShortKeyFiles($language))
             ->filter(function ($file) {

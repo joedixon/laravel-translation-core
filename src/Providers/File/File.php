@@ -24,7 +24,7 @@ class File extends Translation
     /**
      * Get a map of each language with it's associated file path.
      */
-    public function map(string|null $key = null, string|null $default = null): Collection|string|null
+    public function map(string $key = null, string $default = null): Collection|string|null
     {
         $map = collect($this->disk->allFiles($this->languageFilesPath))
             ->flatMap(function (SplFileInfo $file) {
@@ -43,21 +43,33 @@ class File extends Translation
      */
     public function languages(): Collection
     {
-        $directories = collect($this->disk->directories($this->languageFilesPath));
+        return collect($this->disk->allFiles($this->languageFilesPath))
+            ->mapWithKeys(function (SplFileInfo $file) {
+                if ($file->getExtension() == 'json') {
+                    return [$language = Str::replace(".{$file->getExtension()}", '', $file->getFilename()) => $language];
+                }
 
-        $directoryLanguages = $directories->mapWithKeys(function ($directory) {
-            $language = basename($directory);
+                if ($file->getExtension() == 'php') {
+                    if (Str::contains($file->getPathname(), 'vendor')) {
+                        $language = Str::of($file->getPathname())
+                            ->after('vendor'.DIRECTORY_SEPARATOR)
+                            ->explode(DIRECTORY_SEPARATOR)
+                            ->get(1);
 
-            return [$language => $language];
-        })->filter(function ($language) {
-            return $language !== 'vendor';
-        });
+                        return [$language => $language];
+                    }
 
-        $fileLanguages = collect($this->disk->allFiles($this->languageFilesPath))
-            ->filter(fn ($file) => $file->getExtension() === 'json')
-            ->mapWithKeys(fn ($file) => [$language = Str::replace(".{$file->getExtension()}", '', $file->getFilename()) => $language]);
+                    $language = Str::of($file->getPathname())
+                        ->after($this->languageFilesPath.DIRECTORY_SEPARATOR)
+                        ->explode(DIRECTORY_SEPARATOR)
+                        ->first();
 
-        return $directoryLanguages->merge($fileLanguages);
+                    return [$language => $language];
+                }
+
+                return [];
+            })
+            ->filter();
     }
 
     /**
@@ -71,7 +83,7 @@ class File extends Translation
     /**
      * Add a new language.
      */
-    public function addLanguage(string $language, ?string $name = null): void
+    public function addLanguage(string $language, string $name = null): void
     {
         if ($this->languageExists($language)) {
             throw new LanguageExistsException(
