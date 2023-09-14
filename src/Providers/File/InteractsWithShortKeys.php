@@ -15,9 +15,10 @@ trait InteractsWithShortKeys
     public function shortKeyTranslations(string $language): Collection
     {
         return $this->shortKeyFiles($language)->mapWithKeys(function ($group) use ($language) {
-            if (Str::contains($group->getPathname(), 'vendor')) {
+            $path = Str::after($group->getPathname(), $this->languageFilesPath);
+            if (Str::contains($path, 'vendor')) {
                 $translations = $this->disk->getRequire($group->getPathname());
-                $vendor = Str::before(Str::after($group->getPathname(), 'vendor'.DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
+                $vendor = Str::before(Str::after($path, 'vendor'.DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
                 $group = $this->extractGroup($language, $group);
 
                 return ["{$vendor}::{$group}" => $translations];
@@ -65,7 +66,7 @@ trait InteractsWithShortKeys
         if (! $translations->keys()->contains($group)) {
             $translations->put($group, collect());
         }
-        
+
         $values = Arr::dot($translations->get($group));
         $values[$key] = $value;
         $translations->put($group, collect(Arr::undot($values)));
@@ -166,7 +167,6 @@ trait InteractsWithShortKeys
     }
 
     /**
-     * 
      * Extract the group from the file path.
      */
     protected function extractGroup(string $language, SplFileInfo $path): string

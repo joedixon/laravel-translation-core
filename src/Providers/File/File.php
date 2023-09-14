@@ -50,8 +50,9 @@ class File extends Translation
                 }
 
                 if ($file->getExtension() == 'php') {
-                    if (Str::contains($file->getPathname(), 'vendor')) {
-                        $language = Str::of($file->getPathname())
+                    $path = Str::after($file->getPathname(), $this->languageFilesPath);
+                    if (Str::contains($path, 'vendor')) {
+                        $language = Str::of($path)
                             ->after('vendor'.DIRECTORY_SEPARATOR)
                             ->explode(DIRECTORY_SEPARATOR)
                             ->get(1);

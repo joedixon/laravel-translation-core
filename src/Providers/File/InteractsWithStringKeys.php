@@ -17,8 +17,9 @@ trait InteractsWithStringKeys
         return $files->filter(
             fn ($file) => Str::endsWith($file, "{$language}.json")
         )->flatMap(function ($file) {
-            if (Str::contains($file->getPathname(), 'vendor')) {
-                $vendor = Str::before(Str::after($file->getPathname(), 'vendor'.DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
+            $path = Str::after($file->getPathname(), $this->languageFilesPath);
+            if (Str::contains($path, 'vendor')) {
+                $vendor = Str::before(Str::after($path, 'vendor'.DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
 
                 return [$vendor => json_decode($this->disk->get($file), true)];
             }
