@@ -2,7 +2,7 @@
 
 namespace JoeDixon\TranslationCore;
 
-use Illuminate\Support\Arr;
+use Illuminate\Support\Arr as SupportArr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -41,7 +41,7 @@ class Translations
     public function shortByGroup(): Collection
     {
         return $this->shortKeyTranslations->mapWithKeys(function ($group, $key) {
-            return [$key => Arr::dot($group)];
+            return [$key => SupportArr::dot($group)];
         });
     }
 
@@ -136,10 +136,10 @@ class Translations
     protected function diffKeysRecursive(Collection $collectionOne, Collection $collectionTwo): Collection
     {
         return collect(
-            Arr::undot(
-                collect(Arr::dot($collectionOne))
+            Arr::undotUsing(
+                collect(Arr::dotUsing($collectionOne))
                     ->diffKeys(
-                        collect(Arr::dot($collectionTwo))
+                        collect(Arr::dotUsing($collectionTwo))
                     )
             )
         );
@@ -151,10 +151,10 @@ class Translations
     protected function mergeRecursive(Collection $collectionOne, Collection $collectionTwo): Collection
     {
         return collect(
-            Arr::undot(
-                collect(Arr::dot($collectionOne))
+            Arr::undotUsing(
+                collect(Arr::dotUsing($collectionOne))
                     ->merge(
-                        collect(Arr::dot($collectionTwo))
+                        collect(Arr::dotUsing($collectionTwo))
                     )
             )
         );
@@ -166,8 +166,8 @@ class Translations
     protected function searchRecursive(Collection $translations, string $query): Collection
     {
         return collect(
-            Arr::undot(
-                collect(Arr::dot($translations))
+            Arr::undotUsing(
+                collect(Arr::dotUsing($translations))
                     ->filter(fn ($value, $key) => (is_string($key) && Str::contains($key, $query)) || (is_string($value) && Str::contains($value, $query)))
             )
         );
