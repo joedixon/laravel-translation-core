@@ -33,7 +33,9 @@ class ShowMissingTranslationKeys extends Command
         $missingTranslations = $missingTranslations->filter(fn ($translations) => ! $translations->isEmpty());
 
         if ($missingTranslations->isEmpty()) {
-            return $this->info(__('translation::translation.no_missing_keys'));
+            $this->info(__('translation::translation.no_missing_keys'));
+
+            return;
         }
 
         $this->components->twoColumnDetail(
