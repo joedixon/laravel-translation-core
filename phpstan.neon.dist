@@ -9,4 +9,4 @@ parameters:
 
     ignoreErrors:
         - '#Unsafe usage of new static#'
-        - '#does not exist#'
+        - '#Call to an undefined method JoeDixon\\TranslationCore\\TranslationManager#'
