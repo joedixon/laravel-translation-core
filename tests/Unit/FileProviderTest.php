@@ -22,7 +22,7 @@ afterEach(function () {
 
 it('can build a map of translation files', function () {
     expect($this->translation->map()->last())
-        ->toEqual('vendor/laravel-translation/en/validation.php');
+        ->toEqual('vendor/laravel-translation/nl/test.php');
 });
 
 it('can find a translation file from the translation file map', function () {
@@ -33,9 +33,9 @@ it('can find a translation file from the translation file map', function () {
 it('returns all languages', function () {
     $languages = $this->translation->languages();
 
-    expect($languages)->toHaveCount(4);
+    expect($languages)->toHaveCount(5);
     expect($languages->toArray())
-        ->toEqual(['de' => 'de', 'en' => 'en', 'es' => 'es', 'jp' => 'jp']);
+        ->toEqual(['de' => 'de', 'en' => 'en', 'es' => 'es', 'jp' => 'jp', 'nl' => 'nl']);
 });
 
 it('returns all translations', function () {
@@ -208,6 +208,9 @@ it('can return a full list of available keys across all languages', function () 
                 'test' => [
                     'hello' => '',
                     'whats_up' => '',
+                ],
+                'laravel-translation::test' => [
+                    'test' => '',
                 ],
                 'home/nav/items' => [
                     'home' => '',
