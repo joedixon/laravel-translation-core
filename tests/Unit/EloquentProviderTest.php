@@ -27,9 +27,9 @@ afterEach(function () {
 it('returns all languages', function () {
     $languages = $this->translation->languages();
 
-    expect($languages)->toHaveCount(3);
+    expect($languages)->toHaveCount(4);
     expect($languages->toArray())
-        ->toEqual(['de' => 'de', 'en' => 'en', 'es' => 'es']);
+        ->toEqual(['de' => 'de', 'en' => 'en', 'es' => 'es', 'nl' => 'nl']);
 });
 
 it('returns all translations', function () {
@@ -199,6 +199,9 @@ it('can return a full list of available keys across all languages', function () 
                 'home/nav/items' => [
                     'home' => '',
                     'about' => '',
+                ],
+                'laravel-translation::test' => [
+                    'test' => '',
                 ],
             ])
         ));
